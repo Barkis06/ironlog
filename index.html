@@ -118,7 +118,7 @@
   .steps li { margin:8px 0; }
   .danger { color:var(--red); border-color:#64444b; }
   .bottom-nav { position:fixed; z-index:40; bottom:0; left:0; right:0; background:rgba(15,20,28,.95); border-top:1px solid #34404a; backdrop-filter:blur(18px); padding:10px max(15px, env(safe-area-inset-left)) calc(10px + env(safe-area-inset-bottom)) max(15px, env(safe-area-inset-right)); }
-  .nav-inner { width:min(100%,710px); margin:auto; display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
+  .nav-inner { width:min(100%,710px); margin:auto; display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:5px; }
   .nav-btn { background:none; border:0; color:#9aabb6; display:flex; align-items:center; flex-direction:column; gap:4px; font-size:10px; font-weight:750; border-radius:12px; padding:7px 3px 6px; }
   .nav-btn svg { width:23px; height:23px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
   .nav-btn.active { color:var(--accent); background:rgba(187,250,121,.06); }
@@ -154,13 +154,36 @@
   .plan-entry-actions {display:flex; gap:8px; margin-top:7px;}
   .plan-entry-actions .form-toggle,.plan-entry-actions .video-link {min-height:30px; padding:5px 9px; font-size:11px;}
   @media (max-width:355px) { .form-toggle,.video-link {font-size:11px; padding:8px;} .plan-entry-head {flex-wrap:wrap;} }
+
+  /* AI Coach: prompt handoff to ChatGPT and offline quick-reference guides */
+  .coach-hero {background:linear-gradient(135deg,#273c2b,#172b29 65%,#1b2731);border:1px solid #3c624a;border-radius:24px;padding:24px;position:relative;overflow:hidden;}
+  .coach-hero:after {content:"✦";position:absolute;right:19px;top:16px;color:rgba(187,250,121,.14);font-size:78px;pointer-events:none;}
+  .coach-hero h1 {font-size:clamp(29px,7vw,40px);max-width:370px;margin:12px 0;}
+  .coach-hero p {font-size:13px;line-height:1.65;color:#c3d2ca;margin:0;max-width:420px;}
+  .coach-card {background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:17px;margin-top:16px;}
+  .coach-card label {display:block;font-size:12px;color:var(--text);font-weight:850;margin-bottom:10px;}
+  .coach-question {width:100%;min-height:116px;resize:vertical;background:#1b2630;color:var(--text);border:1px solid #435660;border-radius:13px;padding:13px;font-size:15px;line-height:1.55;}
+  .coach-question:focus {border-color:var(--accent);}
+  .coach-actions {display:flex;gap:9px;flex-wrap:wrap;margin-top:12px;}
+  .coach-actions .primary-btn {flex:1;min-width:165px;}
+  .coach-smallprint {color:var(--muted);font-size:12px;line-height:1.6;margin:11px 0 0;}
+  .coach-chips {display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .coach-chip {text-align:left;border:1px solid #3b4c4a;border-radius:12px;background:#1b2a2c;color:#d9e8df;padding:12px 11px;min-height:55px;font-size:12px;font-weight:750;line-height:1.4;}
+  .coach-chip:active {background:#30483a;}
+  .coach-faq {border:1px solid var(--border);border-radius:13px;background:var(--surface);margin:9px 0;overflow:hidden;}
+  .coach-faq summary {padding:15px 14px;font-size:13px;font-weight:800;cursor:pointer;line-height:1.5;}
+  .coach-faq[open] summary {color:var(--accent);border-bottom:1px solid var(--border);}
+  .coach-faq p {font-size:13px;line-height:1.7;color:#c7d2d7;padding:12px 14px 16px;margin:0;}
+  .coach-exercise {background:#24372e;border:1px solid #375544;border-radius:10px;color:#c9f7c0;font-weight:800;padding:8px 10px;font-size:12px;min-height:38px;}
+  @media(max-width:390px) {.coach-chips {grid-template-columns:1fr;} .nav-btn {font-size:9px;}}
+
   @media(min-width:650px) { .wrap { padding-left:26px; padding-right:26px; } .hero { padding:31px; } .exercise-card { padding:21px; } .set-head,.set-row { grid-template-columns:54px 1fr 1fr 54px; } }
   @media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none!important; scroll-behavior:auto!important; } }
 </style>
 </head>
 <body>
   <div class="wrap">
-    <header class="brand"><div class="brand-mark"><div class="mark">I</div><span>IRONLOG<span style="color:var(--accent)">.</span></span></div><span class="tiny-tag">STRENGTH / 5 DAYS · v2.1</span></header>
+    <header class="brand"><div class="brand-mark"><div class="mark">I</div><span>IRONLOG<span style="color:var(--accent)">.</span></span></div><span class="tiny-tag">STRENGTH / 5 DAYS · v2.2</span></header>
     <main id="main" aria-live="polite"></main>
     <footer class="footer">Made for your training. Your logs stay on this device.</footer>
   </div>
@@ -252,7 +275,7 @@ function videoLink(ex) {
 }
 function guideHtml(ex,location) {
  const g=guideFor(ex),gid='form-'+location+'-'+ex.id;
- return `<div class="form-tools"><button class="form-toggle" type="button" data-action="guide" data-target="${gid}" aria-controls="${gid}" aria-expanded="false">ℹ Form tips <span aria-hidden="true">⌄</span></button><a class="video-link" target="_blank" rel="noopener noreferrer" href="${videoLink(ex)}" aria-label="Find ${esc(ex.name)} technique videos on YouTube">▶ Video demos ↗</a></div><div id="${gid}" class="technique-guide" hidden><div class="targets">Works: ${esc(g.muscles)}</div><ol>${g.steps.map(step=>`<li>${esc(step)}</li>`).join('')}</ol><p class="watch-out"><strong>Watch out:</strong> ${esc(g.avoid)}</p></div>`;
+ return `<div class="form-tools"><button class="form-toggle" type="button" data-action="guide" data-target="${gid}" aria-controls="${gid}" aria-expanded="false">ℹ Form tips <span aria-hidden="true">⌄</span></button><a class="video-link" target="_blank" rel="noopener noreferrer" href="${videoLink(ex)}" aria-label="Find ${esc(ex.name)} technique videos on YouTube">▶ Video demos ↗</a><button type="button" class="coach-exercise" data-action="coach-exercise" data-name="${esc(ex.name)}" aria-label="Ask AI about ${esc(ex.name)}">✦ Ask AI</button></div><div id="${gid}" class="technique-guide" hidden><div class="targets">Works: ${esc(g.muscles)}</div><ol>${g.steps.map(step=>`<li>${esc(step)}</li>`).join('')}</ol><p class="watch-out"><strong>Watch out:</strong> ${esc(g.avoid)}</p></div>`;
 }
 
 const main=document.getElementById('main');
@@ -269,6 +292,7 @@ let view='today';
 let selectedDay=(new Date().getDay()+6)%7;
 let weekOffset=0;
 let chartLift='squat';
+let coachDraft='';
 let timerUntil=0;
 let timerName='';
 function save() { try { localStorage.setItem(STORAGE_KEY,JSON.stringify(data)); } catch(err) { flash('Saving is blocked. Export your workout as a backup.'); } }
@@ -300,9 +324,10 @@ const navIcon={
  today:'<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M7 2v4M17 2v4M3 9h18M8 14h3M8 17h7"/></svg>',
  plan:'<svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>',
  progress:'<svg viewBox="0 0 24 24"><path d="M3 20V4M3 20h18M7 16l4-5 4 2 5-8"/></svg>',
+ coach:'<svg viewBox="0 0 24 24"><path d="m12 3 1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3Z"/><path d="M19 17v4M17 19h4M4 17v3M2.5 18.5h3"/></svg>',
  more:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"/></svg>'
 };
-function renderNav(){document.getElementById('nav').innerHTML=[['today','Workout'],['plan','Full Plan'],['progress','Progress'],['more','More']].map(([v,label])=>`<button class="nav-btn ${view===v?'active':''}" data-action="nav" data-value="${v}" aria-label="${label}">${navIcon[v]}<span>${label}</span></button>`).join('');}
+function renderNav(){document.getElementById('nav').innerHTML=[['today','Workout'],['plan','Full Plan'],['coach','AI Coach'],['progress','Progress'],['more','More']].map(([v,label])=>`<button class="nav-btn ${view===v?'active':''}" data-action="nav" data-value="${v}" aria-label="${label}">${navIcon[v]}<span>${label}</span></button>`).join('');}
 function weekAndDays(){
  const monday=mondayOfWeek(weekOffset);const sunday=new Date(monday);sunday.setDate(sunday.getDate()+6);
  return `<div class="week-control"><button class="icon-btn" aria-label="Previous week" data-action="week" data-value="-1">‹</button><div class="week-label"><strong>${dateShort(monday)} – ${dateShort(sunday)}</strong><small>${weekOffset===0?'This week':weekOffset===-1?'Previous week':weekOffset===1?'Next week':weekOffset<0?Math.abs(weekOffset)+' weeks ago':'In '+weekOffset+' weeks'}</small></div><button class="icon-btn" aria-label="Next week" data-action="week" data-value="1">›</button></div>
@@ -359,6 +384,45 @@ function progressView(){const history=sessionEntries(),sets=history.reduce((a,b)
  html+=`<div class="note"><b>Progress tip:</b> After you hit every set at the top of its rep range with good form, add a small amount of weight the next time. For assisted pull-ups, less assistance makes the movement harder.</div>`;
  return html;
 }
+function coachView(){
+ const suggestions=[
+  ['Choosing weights','How do I choose my starting weights for each exercise?'],
+  ['Squat technique','How should I squat safely at 194 cm tall?'],
+  ['Exercise swaps','What can I replace an exercise with if a machine is busy?'],
+  ['Getting stronger','How can I tell when to add more weight?'],
+  ['Eating more','What should I eat to get stronger and gain muscle?'],
+  ['Missing a session','What should I do if I miss a gym day?']
+ ];
+ const faq=[
+  ['When should I increase my weights?','Only increase when you finish every set and rep with controlled technique and about 1–2 good reps to spare. Try small jumps: 1–2.5 kg for upper-body barbell lifts and 2.5–5 kg for lower-body lifts when appropriate.'],
+  ['Why does my program have no deadlifts?','You said deadlift technique feels difficult. Squats, hip thrusts, leg curls and rows let you train your legs and back while focusing on easier-to-learn setups. You can learn deadlifts later if you want to.'],
+  ['Am I training traps and forearms?','Yes. Friday includes dumbbell shrugs (upper traps), and Wednesday includes reverse wrist curls (forearm extensors). Rows, pull-ups and face pulls also help your upper back and grip.'],
+  ['What if an exercise hurts?','Stop the painful movement. Do not force reps through sharp pain. If pain persists or affects daily activities, ask a qualified healthcare professional or physiotherapist to assess it.'],
+  ['How much protein should I eat?','Your starting target is around 115–145 g of protein daily. To gain strength and body mass, aim for a modest calorie surplus and monitor your weight trend over a few weeks.'],
+  ['Do I need to train to failure?','No. As a beginner, leave roughly 2–3 repetitions in reserve when learning movements. Good form and consistent progressive training matter more than exhausting yourself.']
+ ];
+ return `<span class="eyebrow">Personal training help</span>
+   <div class="coach-hero" style="margin-top:12px"><span class="eyebrow">✦ IRONLOG COACH</span><h1>Got a gym question?</h1><p>Ask ChatGPT with your exact five-day strength program already included as context. No need to explain your routine every time.</p></div>
+   <div class="coach-card"><label for="coachQuestion">What would you like to ask?</label>
+     <textarea id="coachQuestion" class="coach-question" maxlength="700" placeholder="For example: What if I can't do Bulgarian split squats?">${esc(coachDraft)}</textarea>
+     <div class="coach-actions"><button type="button" class="primary-btn" data-action="coach-ask">✦ Ask ChatGPT ↗</button><button type="button" class="secondary-btn" data-action="coach-copy">Copy with program</button></div>
+     <p class="coach-smallprint">This opens ChatGPT separately; answers won't appear inside IronLog yet. Your question and training plan are pre-filled, but you may need to tap Send. If the prompt doesn't appear, use the Copy button and paste it in ChatGPT. No workout history is sent.</p></div>
+   <div class="section-row"><h2>Try asking</h2><span class="pill green">Program-aware</span></div>
+   <div class="coach-chips">${suggestions.map(([label,q])=>`<button class="coach-chip" type="button" data-action="coach-suggestion" data-question="${esc(q)}">✦ ${esc(label)}</button>`).join('')}</div>
+   <div class="section-row"><h2>Quick answers</h2><span class="pill">Works offline</span></div>
+   ${faq.map(([q,a])=>`<details class="coach-faq"><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}
+   <div class="note"><b>Remember:</b> These quick answers are pre-written reference tips, not live AI. ChatGPT may make mistakes and doesn't replace professional assessment for injuries or persistent pain.</div>`;
+}
+function coachPrompt(question){
+ return [
+ 'You are helping me with my existing personal gym strength plan. Please answer in plain, concise, beginner-friendly language. My goal is strength, not just bodybuilding.',
+ 'Profile: 19 years old, 194 cm, 71 kg, beginner, full gym access, 5 gym days weekly. I have difficulty with deadlift technique, so my plan intentionally excludes deadlifts and Romanian deadlifts.',
+ 'My actual weekly exercise plan:',
+ ...R.map((day,i)=>day.exercises.length?dayNames[i]+': '+day.exercises.map(ex=>ex.name+' '+ex.sets+'x'+target(ex)).join('; '):dayNames[i]+': Rest'),
+ 'Suggest replacements that match this plan and explain changes in sets/reps when needed. Prioritize good technique, gradual progression, recovery and safety. Do not assume I can already lift a particular weight.',
+ 'My question: '+question
+ ].join('\n');
+}
 function moreView(){return `<span class="eyebrow">Your training setup</span><h1 style="margin-top:10px">Your guide.</h1><p class="top-muted">Everything you need to run your program and keep your progress safe.</p>
  <div class="settings-card"><h3>Your starting profile</h3><div class="stats" style="margin-bottom:0"><div class="stat"><strong>19</strong><span>Years old</span></div><div class="stat"><strong>194</strong><span>Height · cm</span></div><div class="stat"><strong>71</strong><span>Starting kg</span></div></div><p style="margin:14px 0 0">Goal: <b style="color:var(--text)">strength</b>. Plan: <b style="color:var(--text)">5 days per week</b>, with Wednesday intentionally lighter.</p></div>
  <div class="settings-card"><h3>Nutrition & recovery</h3><div class="plan-line"><span>Protein</span><span>115–145 g/day</span></div><div class="plan-line"><span>Calorie surplus</span><span>+250–350/day*</span></div><div class="plan-line"><span>Gradual gain</span><span>0.2–0.4 kg/week</span></div><div class="plan-line"><span>Sleep</span><span>8–9 hours</span></div><p style="margin:10px 0 0">*Estimate above your maintenance calories. Adjust according to your actual weight trend.</p></div>
@@ -367,7 +431,7 @@ function moreView(){return `<span class="eyebrow">Your training setup</span><h1 
  <div class="settings-card"><h3>Keep a backup of your logs</h3><p>Your logs are saved on this device in this browser, not synced to an account. Export periodically so you don't lose progress if you clear browser data or change phones.</p><div class="button-row"><button class="primary-btn" data-action="export">↓ Export backup</button><button class="secondary-btn" data-action="import">↑ Import backup</button></div></div>
  <div class="settings-card"><h3>Add IronLog to your home screen</h3><p>This app can work offline after it is opened once from its HTTPS web address.</p><ol class="steps"><li><b>iPhone:</b> Open the hosted app link in Safari, tap <b>Share</b>, then <b>Add to Home Screen</b> → <b>Add</b>.</li><li><b>Android:</b> Open the hosted app in Chrome, tap the menu (⋮), then <b>Install app</b> or <b>Add to Home screen</b>.</li></ol><p>For full home-screen installation, upload the included app folder to a static HTTPS host first. A locally opened HTML file may not support installation or reliable saving on iPhone.</p></div>
  <div class="settings-card"><h3>Reset progress</h3><p>This permanently clears workout logs and notes on this device. Export a backup first if you want to keep them.</p><button class="secondary-btn danger" data-action="reset">Clear all workout history</button></div>`;}
-function render(){if(view==='today')main.innerHTML=todayView();else if(view==='plan')main.innerHTML=planView();else if(view==='progress')main.innerHTML=progressView();else main.innerHTML=moreView();renderNav();}
+function render(){if(view==='today')main.innerHTML=todayView();else if(view==='plan')main.innerHTML=planView();else if(view==='progress')main.innerHTML=progressView();else if(view==='coach')main.innerHTML=coachView();else main.innerHTML=moreView();renderNav();}
 function scrollTop(){window.scrollTo({top:0,behavior:'instant'});}
 function beginRest(ex){if(!ex||!ex.rest)return;timerName=ex.name;timerUntil=Date.now()+ex.rest*1000;updateTimer();flash('Rest started: '+restText(ex.rest));}
 function updateTimer(){const remaining=Math.max(0,Math.ceil((timerUntil-Date.now())/1000));if(!remaining){if(timerUntil){timerUntil=0;timerDock.classList.remove('visible');try{navigator.vibrate?.(80)}catch{}}return;}timerDock.classList.add('visible');timerText.textContent=Math.floor(remaining/60)+':'+pad(remaining%60);timerDock.querySelector('span').textContent='REST · '+timerName;}
@@ -376,7 +440,26 @@ document.getElementById('stopTimer').addEventListener('click',()=>{timerUntil=0;
 document.body.addEventListener('click',event=>{
  const btn=event.target.closest('[data-action]');if(!btn)return;
  const a=btn.dataset.action,v=btn.dataset.value;
- if(a==='nav'){view=v;render();scrollTop();return;}
+ 
+  if(a==='coach-suggestion'){coachDraft=btn.dataset.question||'';render();scrollTop();document.getElementById('coachQuestion')?.focus();return;}
+  if(a==='coach-exercise'){coachDraft='How do I perform '+(btn.dataset.name||'this exercise')+' with correct technique, and what mistakes should I avoid?';view='coach';render();scrollTop();return;}
+  if(a==='coach-ask'){
+   const q=String(document.getElementById('coachQuestion')?.value||'').trim();
+   if(!q){flash('Write a question first.');document.getElementById('coachQuestion')?.focus();return;}
+   coachDraft=q;
+   window.open('https://chatgpt.com/?q='+encodeURIComponent(coachPrompt(q)),'_blank','noopener,noreferrer');
+   flash('Opening ChatGPT. Tap Send there to ask.');
+   return;
+  }
+  if(a==='coach-copy'){
+   const q=String(document.getElementById('coachQuestion')?.value||'').trim();
+   if(!q){flash('Write a question first.');return;}
+   coachDraft=q;
+   if(!navigator.clipboard?.writeText){flash('Copy unavailable here. Select your question and copy it.');return;}
+   navigator.clipboard.writeText(coachPrompt(q)).then(()=>flash('Question + workout copied!')).catch(()=>flash('Copy failed. Try opening ChatGPT instead.'));
+   return;
+  }
+  if(a==='nav'){view=v;render();scrollTop();return;}
  if(a==='day'){selectedDay=Number(v);view='today';render();return;}
  if(a==='week'){weekOffset+=Number(v);render();return;}
  if(a==='open-day'){selectedDay=Number(v);weekOffset=0;view='today';render();scrollTop();return;}
@@ -396,7 +479,7 @@ document.body.addEventListener('click',event=>{
  if(a==='reset'){if(confirm('Delete all local workout logs and notes? This cannot be undone.')){data={sessions:{},notes:{}};save();render();flash('Workout history cleared.');}return;}
 });
 document.body.addEventListener('input',event=>{
- const t=event.target;if(!t.dataset.field)return;
+ const t=event.target;if(t.id==='coachQuestion'){coachDraft=t.value;return;}if(!t.dataset.field)return;
  if(t.dataset.field==='notes'){data.notes[t.dataset.date]=t.value;save();return;}
  const id=t.dataset.id,date=t.dataset.date,i=Number(t.dataset.set);if(!date||!id)return;
  const value=t.value===''?null:Number(t.value);
