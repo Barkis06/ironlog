@@ -1,0 +1,62 @@
+IRONLOG — PERSONAL 5-DAY STRENGTH WORKOUT APP
+
+WHAT'S INCLUDED
+- index.html: the complete app (no external libraries or accounts required)
+- manifest.webmanifest: installs as a home-screen web app
+- sw.js: offline caching once hosted and opened online
+- icons/: app icons for iPhone and Android
+- Technique guides: short offline cues for all 28 scheduled exercises
+- Video demos: YouTube search links for each exercise (requires internet)
+
+YOUR WORKOUT PROGRAM
+Monday: Lower Body A (squats)
+Tuesday: Upper Body A (bench press)
+Wednesday: Light recovery, core and reverse wrist curls
+Thursday: Lower Body B (hack squats)
+Friday: Upper Body B (overhead press, dumbbell shrugs)
+Saturday and Sunday: Rest
+No deadlifts or Romanian deadlifts.
+
+HOW TO INSTALL ON AN IPHONE (RECOMMENDED)
+1. Unzip the IronLog-PWA.zip file.
+2. Upload the entire contents of the ironlog_app folder to an HTTPS static website
+   (for example, use a static web hosting service's drag-and-drop deployment).
+   Preserve the file structure so index.html and sw.js remain at the root.
+3. Open the resulting https:// website URL in Safari on your iPhone.
+4. Tap Share > Add to Home Screen > Add.
+5. Launch IronLog from the icon. Once opened online, it should also work offline.
+
+HOW TO INSTALL ON ANDROID
+1. Host the folder as described above.
+2. Open the HTTPS link in Chrome.
+3. Open the Chrome menu and tap Install app or Add to Home screen.
+
+DESKTOP / ANDROID QUICK PREVIEW
+You can open index.html directly in a browser. However, local file:// operation,
+especially on iOS, may not support installation or reliable long-term data saving.
+Hosting over HTTPS is recommended for regular use.
+
+HOW TO UPDATE YOUR ALREADY INSTALLED IRONLOG
+1. In your old IronLog, open More > Export backup as a precaution.
+2. Deploy the NEW ZIP to the SAME hosting site/URL as the earlier version.
+3. Refresh the site, or reopen the home-screen app. It may take an extra refresh
+   for the new offline cache to activate.
+4. Logs remain if the origin and storage are unchanged; if you instead use a new
+   website URL or new installation, More > Import backup restores saved logs.
+
+YOUR DATA
+- Your workout logs are stored locally in that browser/app installation.
+- They are NOT automatically synced between devices or browsers.
+- Open More > Export backup regularly, and keep the .json backup somewhere safe.
+- More > Import backup restores a previously exported backup, overwriting the
+  current local log.
+- Clearing Safari/site data or removing the installed app may delete local logs.
+
+NOTES
+- Video buttons search YouTube for exercise demonstrations; they do not open
+  one specific vetted video. Online videos may be blocked by mobile network
+  restrictions or browser content settings.
+- Technique guides are general instruction, not a substitute for coaching.
+The app is a Progressive Web App (PWA), not an App Store/iOS .ipa or Android .apk.
+For gym training, start with a light, technically controlled weight and increase
+load only when all prescribed reps can be done with good technique.

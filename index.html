@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#10151e" />
+  <meta name="description" content="Your 5-day beginner strength plan, workout log and progress tracker. Works offline." />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="IronLog" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <title>IronLog — Strength Tracker</title>
+<style>
+  :root { color-scheme: dark; --bg:#0a0d13; --surface:#121821; --surface2:#18212b; --border:#29313d; --text:#f3f6f5; --muted:#98a5b1; --accent:#bbfa79; --accentDark:#1e3420; --blue:#89baff; --amber:#ffd28e; --red:#ff8d96; --shadow:0 14px 36px rgba(0,0,0,.19); }
+  * { box-sizing:border-box; }
+  html { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; -webkit-tap-highlight-color:transparent; }
+  body { margin:0; background:var(--bg); color:var(--text); min-height:100vh; font-size:15px; }
+  body::before { content:""; pointer-events:none; position:fixed; inset:0; background:radial-gradient(ellipse at 18% -25%,rgba(187,250,121,.10),transparent 47%); z-index:-1; }
+  button, input, textarea, select { font:inherit; }
+  button { cursor:pointer; }
+  button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .wrap { width:min(100%,710px); margin:0 auto; padding: max(18px, env(safe-area-inset-top)) 18px calc(118px + env(safe-area-inset-bottom)); }
+  .brand { display:flex; justify-content:space-between; align-items:center; margin:6px 0 23px; }
+  .brand-mark { display:flex; align-items:center; gap:10px; font-weight:900; letter-spacing:-.7px; font-size:22px; }
+  .mark { display:grid; place-items:center; background:var(--accent); width:36px; height:36px; border-radius:11px; color:#12181b; font-size:19px; font-weight:1000; transform:rotate(-6deg); }
+  .tiny-tag { border:1px solid #32412e; background:rgba(187,250,121,.07); color:var(--accent); padding:7px 10px; border-radius:30px; font-weight:750; font-size:11px; letter-spacing:.45px; }
+  h1,h2,h3,p { margin-top:0; }
+  h1 { font-size:clamp(30px,7.5vw,44px); line-height:1.06; font-weight:850; letter-spacing:-1.5px; margin-bottom:10px; }
+  h2 { font-size:21px; letter-spacing:-.55px; margin-bottom:0; }
+  h3 { font-size:16px; letter-spacing:-.25px; margin-bottom:0; }
+  .eyebrow { color:var(--accent); font-weight:850; text-transform:uppercase; letter-spacing:1.35px; font-size:11px; }
+  .muted { color:var(--muted); }
+  .small { font-size:12px; line-height:1.5; }
+  .section-row { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:28px 0 12px; }
+  .hero { position:relative; overflow:hidden; border-radius:25px; padding:25px 23px 23px; background:linear-gradient(130deg,#213827 0%,#172b24 40%,#18272c 100%); border:1px solid #365341; box-shadow:var(--shadow); }
+  .hero::after { content:""; position:absolute; width:210px; height:210px; right:-60px; bottom:-130px; border:36px solid rgba(187,250,121,.10); border-radius:50%; }
+  .hero h1 { position:relative; max-width:370px; z-index:1; }
+  .hero p { color:#c7d8ca; max-width:390px; font-size:13px; line-height:1.6; margin:0; position:relative; z-index:1; }
+  .hero-footer { display:flex; align-items:center; justify-content:space-between; gap:14px; margin-top:20px; position:relative; z-index:1; }
+  .hero-stat { display:flex; flex-direction:column; gap:4px; }
+  .hero-stat strong { font-size:22px; letter-spacing:-.8px; }
+  .hero-stat span { color:#b1c3b6; font-size:11px; }
+  .ring { position:relative; display:grid; place-items:center; width:73px; height:73px; border-radius:50%; background:conic-gradient(var(--accent) var(--progress),rgba(187,250,121,.18) 0); flex-shrink:0; }
+  .ring::before { content:""; position:absolute; inset:7px; border-radius:50%; background:#1c3027; }
+  .ring strong { position:relative; font-size:17px; }
+  .week-control { display:flex; align-items:center; justify-content:space-between; border:1px solid var(--border); border-radius:15px; padding:9px 11px; background:var(--surface); margin-top:18px; }
+  .icon-btn { width:34px; height:34px; border-radius:11px; border:1px solid var(--border); color:var(--text); background:var(--surface2); display:grid; place-items:center; font-size:22px; line-height:1; }
+  .week-control .week-label { text-align:center; line-height:1.5; }
+  .week-control .week-label strong { display:block; font-size:13px; }
+  .week-control .week-label small { display:block; color:var(--muted); font-size:11px; }
+  .days { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:6px; margin:15px 0 4px; }
+  .day-btn { padding:11px 0 10px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--muted); display:flex; flex-direction:column; align-items:center; gap:8px; font-size:10px; font-weight:800; }
+  .day-btn b { font-size:14px; color:var(--text); font-weight:750; }
+  .day-btn.active { background:var(--accent); border-color:var(--accent); color:#213219; }
+  .day-btn.active b { color:#15200e; }
+  .day-btn .dot { width:5px; height:5px; border-radius:50%; background:transparent; }
+  .day-btn .dot.completed { background:var(--accent); }
+  .day-btn.active .dot.completed { background:#15200e; }
+  .workout-meta { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin:25px 0 15px; }
+  .workout-meta p { margin:5px 0 0; font-size:12px; }
+  .pill { display:inline-flex; align-items:center; border:1px solid var(--border); border-radius:50px; background:var(--surface2); padding:7px 10px; white-space:nowrap; color:#c3ced4; font-size:11px; font-weight:700; }
+  .pill.green { color:var(--accent); border-color:#3b5138; background:#1a291f; }
+  .progress-track { height:6px; background:#28343a; border-radius:12px; overflow:hidden; margin-bottom:18px; }
+  .progress-track>div { height:100%; background:var(--accent); transition:width .2s; border-radius:12px; }
+  .exercise-card { background:var(--surface); border:1px solid var(--border); border-radius:19px; padding:16px; margin:11px 0; box-shadow:0 5px 20px rgba(0,0,0,.075); }
+  .exercise-top { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:14px; }
+  .exercise-index { width:29px; height:29px; flex-shrink:0; background:#26352c; color:var(--accent); font-size:12px; font-weight:850; border-radius:9px; display:grid; place-items:center; }
+  .exercise-name { flex:1; min-width:0; }
+  .exercise-name h3 { line-height:1.25; }
+  .exercise-name p { font-size:11px; color:var(--muted); margin:5px 0 0; }
+  .new-tag { color:var(--accent); background:#253c29; border-radius:5px; font-size:9px; font-weight:800; letter-spacing:.5px; padding:3px 5px; vertical-align:middle; margin-left:4px; }
+  .rest-button { background:#1d2930; border:1px solid #35424a; border-radius:9px; padding:8px 10px; color:#a8c2c6; font-size:11px; font-weight:700; white-space:nowrap; }
+  .set-head,.set-row { display:grid; grid-template-columns:36px minmax(70px,1fr) minmax(70px,1fr) 38px; align-items:center; gap:9px; }
+  .set-head { font-size:10px; color:var(--muted); font-weight:750; padding:0 1px 7px; text-align:center; }
+  .set-row { margin:7px 0; }
+  .set-num { color:#9cabb3; font-size:13px; font-weight:800; text-align:center; }
+  .set-input { width:100%; min-width:0; height:40px; padding:7px 8px; border:1px solid #35424a; background:#1b2630; color:var(--text); border-radius:9px; outline:0; text-align:center; font-size:15px; font-weight:700; }
+  .set-input::placeholder { color:#667984; font-weight:500; }
+  .set-input:focus { border-color:var(--accent); }
+  .set-check { width:34px; height:34px; display:grid; place-items:center; border-radius:10px; border:1px solid #40515a; background:#22303a; color:#8998a0; font-weight:900; font-size:17px; }
+  .set-check.done { background:var(--accent); border-color:var(--accent); color:#182616; }
+  .exercise-bottom { display:flex; justify-content:space-between; align-items:center; gap:8px; padding-top:10px; margin-top:9px; border-top:1px solid #26323b; }
+  .exercise-bottom span { font-size:11px; color:var(--muted); line-height:1.4; }
+  .exercise-bottom strong { color:var(--blue); font-size:11px; text-align:right; white-space:nowrap; }
+  .empty { background:var(--surface); border:1px dashed #3d4a52; border-radius:20px; padding:30px 22px; text-align:center; }
+  .empty-emoji { font-size:34px; margin-bottom:11px; }
+  .empty h3 { font-size:19px; margin:5px 0 8px; }
+  .empty p { color:var(--muted); margin:0 auto 17px; font-size:13px; line-height:1.7; max-width:350px; }
+  .primary-btn { border:0; background:var(--accent); color:#162013; font-weight:850; border-radius:12px; padding:12px 17px; }
+  .secondary-btn { background:var(--surface2); color:var(--text); border:1px solid var(--border); font-weight:750; border-radius:12px; padding:11px 14px; }
+  .tiny-btn { border:0; background:transparent; color:var(--accent); padding:5px; font-size:12px; font-weight:800; }
+  .note { background:#1b242d; border-left:3px solid var(--accent); border-radius:0 11px 11px 0; padding:12px 13px; font-size:12px; color:#b7c4cb; line-height:1.6; margin:17px 0; }
+  .note b { color:var(--text); }
+  .textarea { width:100%; min-height:72px; resize:vertical; background:var(--surface); color:var(--text); border:1px solid var(--border); border-radius:13px; padding:13px; font-size:13px; }
+  .day-plan { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:16px; margin-bottom:10px; }
+  .day-plan-top { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .day-plan .focus { font-size:12px; color:var(--muted); margin:5px 0 12px; }
+  .plan-line { display:flex; justify-content:space-between; padding:8px 0; border-top:1px solid #26303a; font-size:12px; gap:12px; }
+  .plan-line span:last-child { color:var(--muted); white-space:nowrap; }
+  .stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px; margin:18px 0 8px; }
+  .stat { background:var(--surface); border:1px solid var(--border); border-radius:15px; padding:15px 10px; }
+  .stat strong { display:block; font-size:25px; letter-spacing:-.8px; white-space:nowrap; }
+  .stat span { font-size:10px; color:var(--muted); display:block; margin-top:5px; }
+  .chart-card,.settings-card { background:var(--surface); border:1px solid var(--border); border-radius:18px; padding:17px; margin:14px 0; }
+  select { background:#1c2832; color:var(--text); border:1px solid #374650; border-radius:10px; padding:9px 12px; max-width:100%; }
+  .chart { width:100%; height:210px; display:block; }
+  .history-item { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:13px 0; border-bottom:1px solid var(--border); }
+  .history-item:last-child { border-bottom:0; }
+  .history-item b { font-size:13px; }
+  .history-item small { display:block; margin-top:5px; color:var(--muted); font-size:11px; }
+  .history-count { color:var(--accent); font-size:12px; font-weight:800; white-space:nowrap; }
+  .settings-card h3 { margin-bottom:10px; }
+  .settings-card p { color:var(--muted); font-size:13px; line-height:1.65; }
+  .button-row { display:flex; flex-wrap:wrap; gap:8px; }
+  .steps { padding-left:21px; color:#bfcbd1; font-size:13px; line-height:1.8; }
+  .steps li { margin:8px 0; }
+  .danger { color:var(--red); border-color:#64444b; }
+  .bottom-nav { position:fixed; z-index:40; bottom:0; left:0; right:0; background:rgba(15,20,28,.95); border-top:1px solid #34404a; backdrop-filter:blur(18px); padding:10px max(15px, env(safe-area-inset-left)) calc(10px + env(safe-area-inset-bottom)) max(15px, env(safe-area-inset-right)); }
+  .nav-inner { width:min(100%,710px); margin:auto; display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
+  .nav-btn { background:none; border:0; color:#9aabb6; display:flex; align-items:center; flex-direction:column; gap:4px; font-size:10px; font-weight:750; border-radius:12px; padding:7px 3px 6px; }
+  .nav-btn svg { width:23px; height:23px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .nav-btn.active { color:var(--accent); background:rgba(187,250,121,.06); }
+  .timer-dock { display:none; position:fixed; z-index:30; bottom:calc(82px + env(safe-area-inset-bottom)); width:min(calc(100% - 36px),674px); left:50%; transform:translateX(-50%); background:#c0fc81; color:#152011; padding:12px 15px; border-radius:16px; box-shadow:0 10px 25px rgba(0,0,0,.4); align-items:center; justify-content:space-between; gap:15px; }
+  .timer-dock.visible { display:flex; }
+  .timer-dock strong { font-size:21px; font-variant-numeric:tabular-nums; }
+  .timer-dock span { font-size:11px; font-weight:700; opacity:.85; display:block; }
+  .timer-dock button { background:#182418; color:#e6ffd2; border:0; border-radius:10px; padding:10px 15px; font-size:12px; font-weight:800; }
+  .top-muted { color:var(--muted); font-size:12px; margin:5px 0 17px; line-height:1.7; }
+  .toast { position:fixed; z-index:80; left:50%; transform:translateX(-50%); bottom:calc(165px + env(safe-area-inset-bottom)); width:max-content; max-width:calc(100vw - 40px); background:#e8ffe0; color:#182614; padding:11px 16px; border-radius:12px; font-weight:750; font-size:12px; text-align:center; box-shadow:var(--shadow); display:none; }
+  .footer { text-align:center; color:#71808c; margin:25px 0; font-size:11px; }
+
+  /* Inline technique help and video discovery */
+  .form-tools {display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; align-items:center;}
+  .form-toggle,.video-link {display:inline-flex; align-items:center; justify-content:center; gap:6px; font-weight:800; font-size:12px; min-height:38px; padding:8px 12px; border-radius:10px; text-decoration:none;}
+  .form-toggle {background:#26352b; border:1px solid #3e6247; color:var(--accent);}
+  .video-link {background:#253141; border:1px solid #425671; color:#cce1ff;}
+  .form-toggle:hover,.form-toggle[aria-expanded="true"] {background:#304b34;}
+  .video-link:hover {background:#31445d;}
+  .technique-guide {margin-top:11px; padding:13px; border-radius:12px; background:#19252d; border:1px solid #334650; font-size:12px; line-height:1.6;}
+  .technique-guide[hidden] {display:none;}
+  .technique-guide .targets {font-size:10px; font-weight:850; text-transform:uppercase; letter-spacing:.6px; color:var(--accent); margin-bottom:6px;}
+  .technique-guide ol {padding-left:20px; margin:5px 0 9px; color:#d6e0e4;}
+  .technique-guide li {padding:2px 0;}
+  .technique-guide .watch-out {border-top:1px solid #32434b; padding-top:9px; margin:0; color:#c6d1d7;}
+  .technique-guide .watch-out strong {color:#ffd28e;}
+  .video-notice {font-size:11px; line-height:1.5; color:var(--muted); margin:10px 0 0;}
+  .plan-exercises {margin-top:10px;}
+  .plan-entry {border-top:1px solid #26303a; padding:10px 0;}
+  .plan-entry-head {display:flex; align-items:center; justify-content:space-between; gap:9px;}
+  .plan-entry-name {font-size:12px; font-weight:700; min-width:0;}
+  .plan-entry-reps {font-size:11px; color:var(--muted); white-space:nowrap;}
+  .plan-entry-actions {display:flex; gap:8px; margin-top:7px;}
+  .plan-entry-actions .form-toggle,.plan-entry-actions .video-link {min-height:30px; padding:5px 9px; font-size:11px;}
+  @media (max-width:355px) { .form-toggle,.video-link {font-size:11px; padding:8px;} .plan-entry-head {flex-wrap:wrap;} }
+  @media(min-width:650px) { .wrap { padding-left:26px; padding-right:26px; } .hero { padding:31px; } .exercise-card { padding:21px; } .set-head,.set-row { grid-template-columns:54px 1fr 1fr 54px; } }
+  @media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none!important; scroll-behavior:auto!important; } }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="brand"><div class="brand-mark"><div class="mark">I</div><span>IRONLOG<span style="color:var(--accent)">.</span></span></div><span class="tiny-tag">STRENGTH / 5 DAYS</span></header>
+    <main id="main" aria-live="polite"></main>
+    <footer class="footer">Made for your training. Your logs stay on this device.</footer>
+  </div>
+  <aside class="timer-dock" id="timerDock" aria-live="polite"><div><span>REST TIMER</span><strong id="timerText">0:00</strong></div><button id="stopTimer">Skip rest</button></aside>
+  <div id="toast" class="toast" role="status"></div>
+  <nav class="bottom-nav" aria-label="Main navigation"><div class="nav-inner" id="nav"></div></nav>
+  <input id="importFile" type="file" accept=".json,application/json" hidden />
+<script>
+(() => {
+'use strict';
+const STORAGE_KEY = 'ironlog_strength_v1';
+const dayNames = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const shortDays = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const R = [
+ {name:'Lower Body A', focus:'Squat strength', duration:'55–65 min', exercises:[
+  e('squat','Barbell Back Squat',3,5,5,180,'kg',2.5,'Controlled depth; use safety bars.'),
+  e('hip1','Hip Thrust Machine',3,8,8,120,'kg',5,'Keep ribs down; full glute contraction.'),
+  e('legpress','Leg Press',2,10,10,120,'kg',5,'Keep your lower back supported.'),
+  e('curl1','Seated Leg Curl',2,10,10,90,'kg',2.5,'Move slowly and control the return.'),
+  e('calf1','Standing Calf Raise',2,12,12,60,'kg',2.5,'Full comfortable range of motion.')
+ ]},
+ {name:'Upper Body A', focus:'Bench strength', duration:'55–65 min', exercises:[
+  e('bench','Barbell Bench Press',3,5,5,180,'kg',2.5,'Use a spotter or safety arms.'),
+  e('cableRow','Seated Cable Row',3,8,8,120,'kg',2.5,'Pull elbows back, without swinging.'),
+  e('dbShoulder','Dumbbell Shoulder Press',2,8,8,120,'kg',1,'Log weight per dumbbell.'),
+  e('latPulldown','Lat Pulldown',3,10,10,90,'kg',2.5,'Avoid leaning back excessively.'),
+  e('triPush','Triceps Pushdown',2,12,12,60,'kg',2.5,'Keep elbows close to your sides.')
+ ]},
+ {name:'Light Day + Core', focus:'Recovery and forearms', duration:'35–45 min', exercises:[
+  e('cardio','Walking or Cycling',1,15,20,0,'min',0,'Easy conversational pace.'),
+  e('facePull','Cable Face Pull',2,15,15,60,'kg',2.5,'Pull toward upper face, elbows high.'),
+  e('curlWed','Dumbbell Biceps Curl',2,12,12,60,'kg',1,'Log weight per dumbbell.'),
+  e('wrist','Reverse Wrist Curl',2,12,15,60,'kg',1,'NEW · Light weight; palms down; control each rep.'),
+  e('plank','Plank',3,30,45,60,'sec',0,'Keep body straight; avoid holding breath.'),
+  e('mobility','Mobility Exercises',1,5,10,0,'min',0,'Gentle hip and shoulder mobility.')
+ ]},
+ {name:'Lower Body B', focus:'Leg strength', duration:'50–60 min', exercises:[
+  e('hack','Hack Squat Machine',3,6,8,180,'kg',5,'Adjust foot position to a comfortable range.'),
+  e('split','Bulgarian Split Squat',2,8,8,120,'kg',1,'8 reps per leg; log weight per dumbbell.'),
+  e('curl2','Seated Leg Curl',3,10,10,90,'kg',2.5,'Steady tempo, no bouncing.'),
+  e('hip2','Hip Thrust Machine',2,10,10,120,'kg',5,'Smooth controlled reps.'),
+  e('calf2','Seated Calf Raise',2,12,12,60,'kg',2.5,'Pause briefly at the top.')
+ ]},
+ {name:'Upper Body B', focus:'Shoulders, back and traps', duration:'60–70 min', exercises:[
+  e('ohp','Barbell Overhead Press',3,5,5,180,'kg',2.5,'Squeeze glutes and avoid leaning back.'),
+  e('incline','Incline Dumbbell Bench Press',3,8,8,120,'kg',1,'Log weight per dumbbell.'),
+  e('pullups','Assisted Pull-ups',3,6,8,120,'kg',0,'Assistance machine: kg is assistance, lower is harder.'),
+  e('chestRow','Chest-Supported Row',3,8,8,120,'kg',2.5,'Keep chest in contact with pad.'),
+  e('laterals','Dumbbell Lateral Raise',2,12,12,60,'kg',1,'Control arms; avoid swinging.'),
+  e('curlFri','Dumbbell Biceps Curl',2,10,10,60,'kg',1,'Log weight per dumbbell.'),
+  e('shrugs','Dumbbell Shrugs',2,10,15,90,'kg',1,'NEW · Lift shoulders upward, not in circles.')
+ ]},
+ {name:'Rest & Recover',focus:'Full rest',duration:'—',exercises:[]},
+ {name:'Rest & Recover',focus:'Full rest',duration:'—',exercises:[]}
+];
+function e(id,name,sets,min,max,rest,unit,step,note) {return {id,name,sets,min,max,rest,unit,step,note};}
+const FORM_GUIDES = {
+ squat:{muscles:'Quads · glutes · core',steps:['Place the bar across your upper back, brace your abdomen, and step back from the rack.','Set feet about shoulder-width apart, then bend hips and knees together to lower under control.','Push through your whole foot to stand up, keeping the bar balanced over mid-foot.'],avoid:'Keep your heels down and back stable. Set safety bars before attempting working sets.'},
+ hip1:{muscles:'Glutes',steps:['Adjust the pad across the front of your hips and plant your feet firmly.','Drive through your feet to raise your hips until your torso and thighs line up.','Squeeze your glutes briefly; lower slowly without throwing your head backward.'],avoid:'Do not excessively arch your lower back at the top.'},
+ legpress:{muscles:'Quads · glutes',steps:['Adjust the seat so your hips and lower back stay against the pad.','Place feet about shoulder-width apart and lower the platform with control.','Press through the whole foot, stopping before knees lock aggressively.'],avoid:'Do not let your lower back curl or hips lift off the seat.'},
+ curl1:{muscles:'Hamstrings',steps:['Adjust the seat and ankle pad to fit your legs, aligning your knee with the machine pivot.','Keep your thighs against the seat and curl your heels downward and back.','Pause briefly and return slowly.'],avoid:'Avoid swinging or lifting your hips to move the weight.'},
+ calf1:{muscles:'Calves',steps:['Set your forefeet on the platform with heels free to move.','Rise onto the balls of your feet as high as is comfortable.','Lower slowly into a gentle calf stretch.'],avoid:'Do not bounce at the bottom.'},
+ bench:{muscles:'Chest · triceps · shoulders',steps:['Set your eyes under the bar, feet planted, and shoulder blades gently pulled back.','Unrack with straight arms and lower the bar under control toward your mid-chest.','Press up and slightly back until your arms are straight.'],avoid:'Use a spotter or safety bars; do not flare elbows straight out or bounce the bar off your chest.'},
+ cableRow:{muscles:'Mid-back · lats · biceps',steps:['Sit tall with feet braced and hold the handle with arms extended.','Pull toward your lower ribs while driving your elbows back.','Return slowly without rounding or swinging your torso.'],avoid:'Avoid using momentum to jerk the weight.'},
+ dbShoulder:{muscles:'Shoulders · triceps',steps:['Sit upright with your back supported, holding dumbbells around shoulder height.','Press the dumbbells upward in a comfortable path.','Lower slowly to shoulder level.'],avoid:'Do not over-arch your lower back; start with light dumbbells.'},
+ latPulldown:{muscles:'Lats · upper back · biceps',steps:['Adjust the thigh pad, grip the bar, and sit tall.','Pull elbows down toward your ribs as the bar approaches your upper chest.','Return the bar smoothly until your arms are extended.'],avoid:'Avoid excessive backward leaning or pulling behind your neck.'},
+ triPush:{muscles:'Triceps',steps:['Stand steady with elbows tucked near your sides and hold the cable attachment.','Extend your elbows to push the handle downward.','Slowly return until your forearms are near a right angle or a comfortable bend.'],avoid:'Keep shoulders still; avoid swinging your body.'},
+ cardio:{muscles:'Heart · recovery',steps:['Choose a treadmill walk or easy stationary bike pace.','Keep the intensity easy enough to talk in full sentences.','Continue for 15–20 minutes and finish feeling refreshed.'],avoid:'This is a light day; do not turn it into a hard interval session.'},
+ facePull:{muscles:'Rear shoulders · upper back · traps',steps:['Set the rope at face or forehead height and stand with a stable stance.','Pull the rope toward your face as your elbows move outward.','Squeeze your upper back lightly and return with control.'],avoid:'Keep your ribs down and avoid leaning back to move more weight.'},
+ curlWed:{muscles:'Biceps · forearms',steps:['Stand tall with dumbbells by your sides and palms facing forward.','Bend your elbows to raise the weights while your upper arms stay close to your sides.','Lower slowly until your elbows straighten comfortably.'],avoid:'Avoid leaning back or swinging your elbows forward.'},
+ wrist:{muscles:'Forearm extensors',steps:['Sit and rest your forearms on your thighs or a bench with palms facing down.','Let your wrists move slightly downward, then lift the backs of your hands toward your forearms.','Use very light weights and lower slowly.'],avoid:'Only move at the wrist. Stop if you feel sharp wrist pain.'},
+ plank:{muscles:'Abs · trunk stabilizers',steps:['Place your forearms on the floor with elbows beneath shoulders.','Tighten abs and glutes, keeping a straight line from head to heels.','Breathe normally while holding for 30–45 seconds.'],avoid:'Do not let your hips sag or hold your breath.'},
+ mobility:{muscles:'Hips · shoulders',steps:['Do gentle shoulder circles and controlled arm reaches.','Try comfortable hip flexor stretches and bodyweight squat practice.','Move slowly for 5–10 minutes, staying within pain-free range.'],avoid:'Mobility should not cause pain or aggressive stretching.'},
+ hack:{muscles:'Quads · glutes',steps:['Position shoulders under the pads and place feet comfortably on the platform.','Unlock the machine and bend knees and hips as far as you can with your back supported.','Press through your feet to return upward smoothly.'],avoid:'Do not let your heels lift or lower so far that your back shifts away from the pad.'},
+ split:{muscles:'Quads · glutes · balance',steps:['Stand a step in front of a bench and place your rear foot on it.','Lower by bending the front knee, keeping most of your weight on the front leg.','Drive through the front foot to stand; finish all reps before switching legs.'],avoid:'Begin bodyweight-only if balance is difficult; do not push through knee pain.'},
+ calf2:{muscles:'Calves · soleus',steps:['Adjust thigh pads and place forefeet on the platform.','Raise your heels as high as comfortable while seated.','Pause, then lower under control.'],avoid:'Avoid bouncing or lifting your hips away from the seat.'},
+ ohp:{muscles:'Shoulders · triceps · core',steps:['Stand with feet about hip-width apart and hold the bar at upper chest height.','Brace abs and glutes, then press the bar upward while moving your head slightly out of the way.','Finish with the bar above mid-foot and lower under control.'],avoid:'Avoid leaning backward excessively; use a light bar while learning.'},
+ incline:{muscles:'Upper chest · shoulders · triceps',steps:['Set the bench to a low incline, roughly 15–30 degrees.','With feet planted, lower dumbbells toward the sides of your upper chest.','Press them upward with control, keeping shoulders stable.'],avoid:'Do not lower weights too far or let elbows flare straight sideways.'},
+ pullups:{muscles:'Lats · upper back · biceps',steps:['Set the assistance weight and hold the handles with a comfortable grip.','Start with straight arms and pull your chest upward by driving elbows down.','Lower with control to the start position.'],avoid:'On assistance machines, more assistance makes it easier; avoid swinging.'},
+ chestRow:{muscles:'Mid-back · lats · biceps',steps:['Adjust the bench or machine so your chest remains supported.','Pull the handles toward your lower ribs with elbows traveling back.','Lower slowly until your arms extend comfortably.'],avoid:'Keep chest on the pad; avoid shrugging to move the weight.'},
+ laterals:{muscles:'Side deltoids',steps:['Stand tall holding light dumbbells at your sides.','With slight elbow bend, raise arms out to the sides to about shoulder height.','Lower slowly without swinging.'],avoid:'Avoid hiking your shoulders or lifting with momentum.'},
+ shrugs:{muscles:'Upper traps · grip',steps:['Stand upright with dumbbells at your sides and arms straight.','Raise your shoulders straight upward toward your ears.','Pause briefly at the top and lower slowly.'],avoid:'Do not roll your shoulders in circles or jerk heavy weights.'}
+};
+const GUIDE_ALIASES = {hip2:'hip1',curl2:'curl1',curlFri:'curlWed'};
+function guideFor(ex) {return FORM_GUIDES[GUIDE_ALIASES[ex.id]||ex.id] || {muscles:'Full body',steps:[ex.note],avoid:'Use a comfortable range of motion and controlled technique.'};}
+function videoLink(ex) {
+ const phrase = ex.id==='cardio' ? 'easy stationary bike cardio technique gym beginner' : ex.id==='mobility' ? 'beginner hips shoulders mobility gym routine' : ex.name + ' how to exercise proper form tutorial';
+ return 'https://www.youtube.com/results?search_query='+encodeURIComponent(phrase);
+}
+function guideHtml(ex,location) {
+ const g=guideFor(ex),gid='form-'+location+'-'+ex.id;
+ return `<div class="form-tools"><button class="form-toggle" type="button" data-action="guide" data-target="${gid}" aria-controls="${gid}" aria-expanded="false">ℹ Form tips <span aria-hidden="true">⌄</span></button><a class="video-link" target="_blank" rel="noopener noreferrer" href="${videoLink(ex)}" aria-label="Find ${esc(ex.name)} technique videos on YouTube">▶ Video demos ↗</a></div><div id="${gid}" class="technique-guide" hidden><div class="targets">Works: ${esc(g.muscles)}</div><ol>${g.steps.map(step=>`<li>${esc(step)}</li>`).join('')}</ol><p class="watch-out"><strong>Watch out:</strong> ${esc(g.avoid)}</p></div>`;
+}
+
+const main=document.getElementById('main');
+const timerDock=document.getElementById('timerDock');
+const timerText=document.getElementById('timerText');
+const toast=document.getElementById('toast');
+let toastTimeout;
+function getSaved() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch(err) { return {}; } }
+let data = getSaved();
+if (!data || typeof data !== 'object' || Array.isArray(data)) data={};
+if (!data.sessions || typeof data.sessions !== 'object' || Array.isArray(data.sessions)) data.sessions={};
+if (!data.notes || typeof data.notes !== 'object' || Array.isArray(data.notes)) data.notes={};
+let view='today';
+let selectedDay=(new Date().getDay()+6)%7;
+let weekOffset=0;
+let chartLift='squat';
+let timerUntil=0;
+let timerName='';
+function save() { try { localStorage.setItem(STORAGE_KEY,JSON.stringify(data)); } catch(err) { flash('Saving is blocked. Export your workout as a backup.'); } }
+function flash(msg) { toast.textContent=msg; toast.style.display='block'; clearTimeout(toastTimeout); toastTimeout=setTimeout(()=>toast.style.display='none',3000); }
+function esc(x) { return String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function pad(n) { return String(n).padStart(2,'0'); }
+function iso(d) {return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function mondayOfWeek(offset=0) {const d=new Date();d.setHours(12,0,0,0); d.setDate(d.getDate() - (d.getDay()+6)%7 + offset*7);return d;}
+function dateForDay(day) {const d=mondayOfWeek(weekOffset);d.setDate(d.getDate()+day);return d;}
+function dateShort(d){return d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});}
+function dateLong(d){return d.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});}
+function dateSession(){return iso(dateForDay(selectedDay));}
+function getSet(date,id,i){const x=data.sessions?.[date]?.[id]?.[i];return x && typeof x === 'object'?x:{};}
+function updateSet(date,id,i,patch){
+ if(!data.sessions[date])data.sessions[date]={};
+ if(!Array.isArray(data.sessions[date][id]))data.sessions[date][id]=[];
+ data.sessions[date][id][i]={...getSet(date,id,i),...patch};
+ save();
+}
+function sessionSummary(date,day) {let total=0,completed=0;R[day].exercises.forEach(ex=>{total+=ex.sets;for(let i=0;i<ex.sets;i++)if(getSet(date,ex.id,i).done)completed++;});return {total,completed,pct:total?Math.round(completed/total*100):0};}
+function sessionEntries(){return Object.keys(data.sessions).filter(date=>/^\d{4}-\d{2}-\d{2}$/.test(date)).map(date=>{let count=0,vol=0;for(const arr of Object.values(data.sessions[date]||{})){if(!Array.isArray(arr))continue;for(const x of arr){if(x?.done){count++;const w=Number(x.weight),r=Number(x.reps); if(x.weight!=='' && x.weight!=null && w>0 && r>0)vol+=w*r;}}}return {date,count,vol};}).filter(x=>x.count>0).sort((a,b)=>a.date<b.date?1:-1);}
+function lastPerformance(id,beforeDate){const dates=Object.keys(data.sessions).filter(d=>d<beforeDate).sort().reverse();for(const date of dates){const a=data.sessions[date]?.[id];if(Array.isArray(a)){const completed=a.filter(s=>s?.done&&s.weight!==''&&s.weight!=null&&Number(s.weight)>0);if(completed.length)return {date,arr:a,weight:Math.max(...completed.map(s=>Number(s.weight)))};}}return null;}
+function suggestion(ex,date){if(ex.unit!=='kg'||ex.step<=0)return '';const prev=lastPerformance(ex.id,date);if(!prev)return '';const all=Array.isArray(prev.arr)&&prev.arr.slice(0,ex.sets).length===ex.sets&&prev.arr.slice(0,ex.sets).every(s=>s?.done&&Number(s.reps)>=ex.max); if(ex.id==='pullups')return '';if(all)return 'Try '+fmt(prev.weight+ex.step)+' kg next';return 'Last: '+fmt(prev.weight)+' kg';}
+function fmt(n){return Math.round(n*10)/10;}
+function target(ex){return ex.min===ex.max?String(ex.min):ex.min+'–'+ex.max;}
+function parseRest(t){return t?Math.ceil(t):0;}
+function restText(sec){if(!sec)return 'No timed rest';if(sec<60)return sec+' sec rest';if(sec%60===0)return sec/60+' min rest';return Math.floor(sec/60)+'m '+(sec%60)+'s rest';}
+const navIcon={
+ today:'<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M7 2v4M17 2v4M3 9h18M8 14h3M8 17h7"/></svg>',
+ plan:'<svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>',
+ progress:'<svg viewBox="0 0 24 24"><path d="M3 20V4M3 20h18M7 16l4-5 4 2 5-8"/></svg>',
+ more:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"/></svg>'
+};
+function renderNav(){document.getElementById('nav').innerHTML=[['today','Workout'],['plan','Full Plan'],['progress','Progress'],['more','More']].map(([v,label])=>`<button class="nav-btn ${view===v?'active':''}" data-action="nav" data-value="${v}" aria-label="${label}">${navIcon[v]}<span>${label}</span></button>`).join('');}
+function weekAndDays(){
+ const monday=mondayOfWeek(weekOffset);const sunday=new Date(monday);sunday.setDate(sunday.getDate()+6);
+ return `<div class="week-control"><button class="icon-btn" aria-label="Previous week" data-action="week" data-value="-1">‹</button><div class="week-label"><strong>${dateShort(monday)} – ${dateShort(sunday)}</strong><small>${weekOffset===0?'This week':weekOffset===-1?'Previous week':weekOffset===1?'Next week':weekOffset<0?Math.abs(weekOffset)+' weeks ago':'In '+weekOffset+' weeks'}</small></div><button class="icon-btn" aria-label="Next week" data-action="week" data-value="1">›</button></div>
+ <div class="days" aria-label="Days of this week">${dayNames.map((d,i)=>{const date=iso(dateForDay(i));const c=sessionSummary(date,i).completed;return `<button class="day-btn ${selectedDay===i?'active':''}" data-action="day" data-value="${i}" aria-label="${d}"><span>${shortDays[i]}</span><b>${dateForDay(i).getDate()}</b><i class="dot ${c?'completed':''}"></i></button>`;}).join('')}</div>`;
+}
+function todayView(){
+ const d=R[selectedDay],date=dateSession(),s=sessionSummary(date,selectedDay),rest=d.exercises.length===0;
+ const fullDate=dateLong(dateForDay(selectedDay));
+ const heading=rest?'Recharge day.':d.name+' day.';
+ const desc=rest?'Rest, eat well and get ready for your next workout.':d.focus+' · '+d.duration+' · '+d.exercises.length+' exercises';
+ let html=`<div class="hero"><span class="eyebrow">${esc(dayNames[selectedDay])} · ${esc(fullDate)}</span><h1 style="margin-top:12px">${esc(heading)}</h1><p>${esc(desc)}</p><div class="hero-footer"><div class="hero-stat"><strong>${rest?'REST':s.completed+' / '+s.total}</strong><span>${rest?'Recovery is training too':'Sets finished'}</span></div><div class="ring" style="--progress:${rest?0:s.pct}%"><strong>${rest?'☾':s.pct+'%'}</strong></div></div></div>`;
+ html+=weekAndDays();
+ if(rest){html+=`<div class="section-row"><h2>Rest day</h2><span class="pill green">Recover</span></div><div class="empty"><div class="empty-emoji">🌙</div><h3>Recovery builds strength.</h3><p>You have no exercises scheduled today. Prioritize food, hydration and sleep. Select another day above to see your workouts.</p><button class="primary-btn" data-action="day" data-value="0">View Monday workout</button></div>`;return html;}
+ html+=`<div class="workout-meta"><div><h2>Today's exercises</h2><p class="muted">${s.completed} of ${s.total} sets completed · Auto-saved</p></div><span class="pill">${esc(d.duration)}</span></div><div class="progress-track" role="progressbar" aria-valuenow="${s.pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Workout progress"><div style="width:${s.pct}%"></div></div><p class="video-notice">Tap <b>Form tips</b> for 3 quick steps, or <b>Video demos</b> to find exercise tutorials on YouTube (internet required).</p>`;
+ d.exercises.forEach((ex,n)=>{
+  let rows='';for(let i=0;i<ex.sets;i++){
+   const cur=getSet(date,ex.id,i),isDone=!!cur.done;
+   const hasWeight=ex.unit==='kg';
+   rows+=`<div class="set-row"><div class="set-num">${i+1}</div><input class="set-input" ${hasWeight?'':'disabled'} aria-label="${esc(ex.name)} set ${i+1} weight in kg" type="number" inputmode="decimal" min="0" step="0.5" placeholder="${hasWeight?'—':'N/A'}" data-field="weight" data-id="${ex.id}" data-set="${i}" data-date="${date}" value="${cur.weight==null?'':esc(cur.weight)}"/><input class="set-input" aria-label="${esc(ex.name)} set ${i+1} ${ex.unit==='kg'?'reps':ex.unit}" type="number" inputmode="numeric" min="0" step="1" placeholder="${ex.min}" data-field="reps" data-id="${ex.id}" data-set="${i}" data-date="${date}" value="${cur.reps==null?'':esc(cur.reps)}"/><button class="set-check ${isDone?'done':''}" aria-label="${esc(ex.name)} set ${i+1} ${isDone?'completed':'mark completed'}" aria-pressed="${isDone}" data-action="complete" data-id="${ex.id}" data-set="${i}" data-day="${selectedDay}" data-date="${date}">${isDone?'✓':'○'}</button></div>`;
+  }
+  const sug=suggestion(ex,date),unit=ex.unit==='kg'?'REPS':ex.unit.toUpperCase();
+  html+=`<section class="exercise-card"><div class="exercise-top"><span class="exercise-index">${pad(n+1)}</span><div class="exercise-name"><h3>${esc(ex.name)}${ex.id==='wrist'||ex.id==='shrugs'?'<span class="new-tag">ADDED</span>':''}</h3><p>${ex.sets} ${ex.sets===1?'set':'sets'} × ${target(ex)} ${ex.unit==='kg'?'reps':ex.unit} · ${restText(ex.rest)}</p></div>${ex.rest?`<button class="rest-button" data-action="rest" data-id="${ex.id}" data-day="${selectedDay}">⏱ Rest</button>`:''}</div><div class="set-head"><span>SET</span><span>KG</span><span>${unit}</span><span>DONE</span></div>${rows}<div class="exercise-bottom"><span>${esc(ex.note)}</span>${sug?`<strong>${esc(sug)}</strong>`:''}</div>${guideHtml(ex,'workout')}</section>`;
+ });
+ html+=`<div class="note"><b>How to log:</b> Enter your weight and reps, then tap ○ to finish each set. If reps are blank when you check a set, the prescribed minimum is used. For dumbbells, log the weight of one dumbbell. The next workout uses your previous logs to suggest a weight.</div>`;
+ html+=`<div class="section-row"><h2>Workout notes</h2><span class="muted small">Optional</span></div><textarea class="textarea" data-field="notes" data-date="${date}" placeholder="How did the session feel? Technique tips, energy, etc.">${esc(data.notes[date]||'')}</textarea>`;
+ return html;
+}
+function planView(){let html=`<span class="eyebrow">Your training blueprint</span><h1 style="margin-top:10px">The full plan.</h1><p class="top-muted">Four strength-focused sessions, one lighter technique and recovery day. No deadlifts or Romanian deadlifts.</p>`;
+ html+=`<div class="note"><b>Rule:</b> Warm up 5–10 minutes and do lighter ramp-up sets before your first major lift. Start with 2–3 reps in reserve. Increase load only when technique and target reps are solid.</div>`;
+ R.forEach((d,i)=>{
+  html+=`<div class="day-plan"><div class="day-plan-top"><div><span class="eyebrow">${dayNames[i]}</span><h3 style="margin-top:5px">${esc(d.name)}</h3></div><button class="${i<5?'secondary-btn':'tiny-btn'}" data-action="open-day" data-value="${i}">${i<5?'Log session':'Rest day'}</button></div><p class="focus">${esc(d.focus)} · ${esc(d.duration)}</p>${d.exercises.length?`<div class="plan-exercises">${d.exercises.map(ex=>`<div class="plan-entry"><div class="plan-entry-head"><span class="plan-entry-name">${esc(ex.name)}</span><span class="plan-entry-reps">${ex.sets} × ${target(ex)} ${ex.unit==='kg'?'reps':ex.unit}</span></div>${guideHtml(ex,'plan')}</div>`).join('')}</div>`:'<div class="plan-line"><span>Recovery, hydration and sleep</span><span>—</span></div>'}</div>`;
+ });
+ return html;
+}
+function chartMarkup(id){const pts=[];
+ for(const date of Object.keys(data.sessions).sort()){const a=data.sessions[date]?.[id];if(!Array.isArray(a))continue;const valid=a.filter(s=>s?.done&&s.weight!==''&&s.weight!=null&&Number(s.weight)>0);if(valid.length)pts.push({date,val:Math.max(...valid.map(s=>Number(s.weight)))});}
+ const arr=pts.slice(-10);if(!arr.length)return `<div class="empty" style="padding:25px"><div class="empty-emoji">📈</div><h3>No logged weights yet</h3><p>Complete a set with weight recorded to see your progress here.</p></div>`;
+ const width=330,height=178,left=28,right=10,top=20,bottom=32,innerW=width-left-right,innerH=height-top-bottom;
+ const minVal=Math.max(0,Math.floor((Math.min(...arr.map(p=>p.val))*0.86)/5)*5);let maxVal=Math.ceil((Math.max(...arr.map(p=>p.val))*1.08)/5)*5;if(maxVal<=minVal)maxVal=minVal+10;
+ const pos=(p,i)=>({x:left+(arr.length===1?innerW/2:i*innerW/(arr.length-1)),y:top+innerH-(p.val-minVal)/(maxVal-minVal)*innerH});const p=arr.map(pos);
+ const coords=p.map(v=>v.x.toFixed(1)+','+v.y.toFixed(1)).join(' ');
+ const grid=[0,.5,1].map(t=>{const y=top+t*innerH,n=Math.round((maxVal-(maxVal-minVal)*t)*10)/10;return `<line x1="${left}" y1="${y}" x2="${width-right}" y2="${y}" stroke="#34424b" stroke-dasharray="4 5"/><text x="${left-5}" y="${y+3}" text-anchor="end" font-size="9" fill="#94a6ad">${n}</text>`;}).join('');
+ const line=p.length>=2?`<polyline points="${coords}" fill="none" stroke="#bbfa79" stroke-linejoin="round" stroke-linecap="round" stroke-width="3"/>`:'';
+ const dots=p.map((v,i)=>`<circle cx="${v.x}" cy="${v.y}" r="4" fill="#bbfa79" stroke="#213524" stroke-width="2"/><text x="${v.x}" y="${v.y-10}" text-anchor="middle" font-size="9" font-weight="800" fill="#dcebd8">${fmt(arr[i].val)}</text>`).join('');
+ const labels=p.map((v,i)=>(i===0||i===p.length-1||p.length<=4)?`<text x="${v.x}" y="${height-9}" text-anchor="middle" font-size="9" fill="#97aab3">${esc(dateShort(new Date(arr[i].date+'T12:00:00')))}</text>`:'').join('');
+ return `<svg class="chart" viewBox="0 0 ${width} ${height}" aria-label="Logged maximum working weights over time, kilograms" role="img">${grid}${line}${dots}${labels}</svg><p class="small muted" style="margin-bottom:0">Heaviest completed working set (kg) per logged session. Up to 10 entries.</p>`;
+}
+function progressView(){const history=sessionEntries(),sets=history.reduce((a,b)=>a+b.count,0),vol=history.reduce((a,b)=>a+b.vol,0); const lifts=[['squat','Back Squat'],['bench','Bench Press'],['ohp','Overhead Press'],['hack','Hack Squat'],['hip1','Hip Thrust Machine'],['shrugs','Dumbbell Shrugs'],['wrist','Reverse Wrist Curls']];
+ let html=`<span class="eyebrow">Your hard work, measured</span><h1 style="margin-top:10px">Keep getting stronger.</h1><p class="top-muted">Your data is stored locally in this browser. Every checked-off set counts toward your history.</p><div class="stats"><div class="stat"><strong>${history.length}</strong><span>Sessions logged</span></div><div class="stat"><strong>${sets}</strong><span>Sets finished</span></div><div class="stat"><strong>${vol>=1000?(vol/1000).toFixed(1)+'k':Math.round(vol)}</strong><span>Approx. kg × reps</span></div></div>`;
+ html+=`<div class="section-row"><h2>Weight progress</h2></div><div class="chart-card"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px"><b style="font-size:13px">Top working weight</b><select id="chartLift" aria-label="Choose exercise for progress chart">${lifts.map(([id,name])=>`<option value="${id}" ${chartLift===id?'selected':''}>${esc(name)}</option>`).join('')}</select></div>${chartMarkup(chartLift)}</div>`;
+ html+=`<div class="section-row"><h2>Recent workouts</h2><span class="pill">${history.length} total</span></div>`;
+ if(!history.length)html+=`<div class="empty"><h3>No workouts logged yet</h3><p>After your first set, your exercise history will appear here.</p><button class="primary-btn" data-action="nav" data-value="today">Start logging</button></div>`;
+ else html+=`<div class="settings-card">${history.slice(0,12).map(item=>{const day=(new Date(item.date+'T12:00:00').getDay()+6)%7;return `<div class="history-item"><div><b>${esc(dayNames[day])} · ${esc(R[day].name)}</b><small>${esc(dateLong(new Date(item.date+'T12:00:00')))}</small></div><span class="history-count">${item.count} sets ✓</span></div>`;}).join('')}</div>`;
+ html+=`<div class="note"><b>Progress tip:</b> After you hit every set at the top of its rep range with good form, add a small amount of weight the next time. For assisted pull-ups, less assistance makes the movement harder.</div>`;
+ return html;
+}
+function moreView(){return `<span class="eyebrow">Your training setup</span><h1 style="margin-top:10px">Your guide.</h1><p class="top-muted">Everything you need to run your program and keep your progress safe.</p>
+ <div class="settings-card"><h3>Your starting profile</h3><div class="stats" style="margin-bottom:0"><div class="stat"><strong>19</strong><span>Years old</span></div><div class="stat"><strong>194</strong><span>Height · cm</span></div><div class="stat"><strong>71</strong><span>Starting kg</span></div></div><p style="margin:14px 0 0">Goal: <b style="color:var(--text)">strength</b>. Plan: <b style="color:var(--text)">5 days per week</b>, with Wednesday intentionally lighter.</p></div>
+ <div class="settings-card"><h3>Nutrition & recovery</h3><div class="plan-line"><span>Protein</span><span>115–145 g/day</span></div><div class="plan-line"><span>Calorie surplus</span><span>+250–350/day*</span></div><div class="plan-line"><span>Gradual gain</span><span>0.2–0.4 kg/week</span></div><div class="plan-line"><span>Sleep</span><span>8–9 hours</span></div><p style="margin:10px 0 0">*Estimate above your maintenance calories. Adjust according to your actual weight trend.</p></div>
+ <div class="settings-card"><h3>Progression rules</h3><p>In the first 2 weeks, practice form with 2–3 reps left in reserve. When you comfortably finish all sets and reps, increase upper-body barbell lifts by approximately 1–2.5 kg and lower-body lifts by 2.5–5 kg. Machine increments vary. Stop or modify painful movements and ask a qualified trainer for form help.</p></div>
+ <div class="settings-card"><h3>Exercise technique & videos</h3><p>Each exercise has a quick 3-step guide and common technique mistake under <b style="color:var(--text)">Form tips</b>. The <b style="color:var(--text)">Video demos</b> link opens YouTube search results for that exercise. The tips work offline; videos need internet. Demonstrations are not independently vetted. Learn new barbell lifts with a qualified trainer when possible.</p></div>
+ <div class="settings-card"><h3>Keep a backup of your logs</h3><p>Your logs are saved on this device in this browser, not synced to an account. Export periodically so you don't lose progress if you clear browser data or change phones.</p><div class="button-row"><button class="primary-btn" data-action="export">↓ Export backup</button><button class="secondary-btn" data-action="import">↑ Import backup</button></div></div>
+ <div class="settings-card"><h3>Add IronLog to your home screen</h3><p>This app can work offline after it is opened once from its HTTPS web address.</p><ol class="steps"><li><b>iPhone:</b> Open the hosted app link in Safari, tap <b>Share</b>, then <b>Add to Home Screen</b> → <b>Add</b>.</li><li><b>Android:</b> Open the hosted app in Chrome, tap the menu (⋮), then <b>Install app</b> or <b>Add to Home screen</b>.</li></ol><p>For full home-screen installation, upload the included app folder to a static HTTPS host first. A locally opened HTML file may not support installation or reliable saving on iPhone.</p></div>
+ <div class="settings-card"><h3>Reset progress</h3><p>This permanently clears workout logs and notes on this device. Export a backup first if you want to keep them.</p><button class="secondary-btn danger" data-action="reset">Clear all workout history</button></div>`;}
+function render(){if(view==='today')main.innerHTML=todayView();else if(view==='plan')main.innerHTML=planView();else if(view==='progress')main.innerHTML=progressView();else main.innerHTML=moreView();renderNav();}
+function scrollTop(){window.scrollTo({top:0,behavior:'instant'});}
+function beginRest(ex){if(!ex||!ex.rest)return;timerName=ex.name;timerUntil=Date.now()+ex.rest*1000;updateTimer();flash('Rest started: '+restText(ex.rest));}
+function updateTimer(){const remaining=Math.max(0,Math.ceil((timerUntil-Date.now())/1000));if(!remaining){if(timerUntil){timerUntil=0;timerDock.classList.remove('visible');try{navigator.vibrate?.(80)}catch{}}return;}timerDock.classList.add('visible');timerText.textContent=Math.floor(remaining/60)+':'+pad(remaining%60);timerDock.querySelector('span').textContent='REST · '+timerName;}
+setInterval(updateTimer,1000);
+document.getElementById('stopTimer').addEventListener('click',()=>{timerUntil=0;timerDock.classList.remove('visible');});
+document.body.addEventListener('click',event=>{
+ const btn=event.target.closest('[data-action]');if(!btn)return;
+ const a=btn.dataset.action,v=btn.dataset.value;
+ if(a==='nav'){view=v;render();scrollTop();return;}
+ if(a==='day'){selectedDay=Number(v);view='today';render();return;}
+ if(a==='week'){weekOffset+=Number(v);render();return;}
+ if(a==='open-day'){selectedDay=Number(v);weekOffset=0;view='today';render();scrollTop();return;}
+ if(a==='guide'){const target=document.getElementById(btn.dataset.target);if(!target)return;const expand=target.hidden;target.hidden=!expand;btn.setAttribute('aria-expanded',String(expand));btn.innerHTML=expand?'ℹ Hide tips <span aria-hidden="true">⌃</span>':'ℹ Form tips <span aria-hidden="true">⌄</span>';return;}
+ if(a==='rest'){const ex=R[Number(btn.dataset.day)].exercises.find(e=>e.id===btn.dataset.id);beginRest(ex);return;}
+ if(a==='complete'){
+  const day=Number(btn.dataset.day),ex=R[day].exercises.find(e=>e.id===btn.dataset.id);if(!ex)return;
+  const date=btn.dataset.date,i=Number(btn.dataset.set),s=getSet(date,ex.id,i);const next=!s.done;
+  const patch={done:next};if(next&&(s.reps==null||s.reps===''))patch.reps=ex.min;
+  updateSet(date,ex.id,i,patch);if(next&&ex.rest)beginRest(ex);
+  render();return;
+ }
+ if(a==='export'){
+  const payload={app:'IronLog',version:1,exportedAt:new Date().toISOString(),data};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='ironlog-backup-'+iso(new Date())+'.json';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);flash('Backup file created');return;
+ }
+ if(a==='import'){document.getElementById('importFile').click();return;}
+ if(a==='reset'){if(confirm('Delete all local workout logs and notes? This cannot be undone.')){data={sessions:{},notes:{}};save();render();flash('Workout history cleared.');}return;}
+});
+document.body.addEventListener('input',event=>{
+ const t=event.target;if(!t.dataset.field)return;
+ if(t.dataset.field==='notes'){data.notes[t.dataset.date]=t.value;save();return;}
+ const id=t.dataset.id,date=t.dataset.date,i=Number(t.dataset.set);if(!date||!id)return;
+ const value=t.value===''?null:Number(t.value);
+ if(value!=null&&(!Number.isFinite(value)||value<0))return;
+ updateSet(date,id,i,{[t.dataset.field]:value});
+});
+document.body.addEventListener('change',event=>{if(event.target.id==='chartLift'){chartLift=event.target.value;render();}});
+document.getElementById('importFile').addEventListener('change',async event=>{
+ const f=event.target.files?.[0];if(!f)return;
+ if(f.size>2000000){flash('Backup is too large.');event.target.value='';return;}
+ try {const raw=JSON.parse(await f.text());const imported=raw?.data;if(raw?.app!=='IronLog'||!imported||typeof imported.sessions!=='object'||!imported.sessions||Array.isArray(imported.sessions))throw Error('Not an IronLog backup');if(!confirm('Replace current workout logs with the backup? Export current logs first if needed.'))return;data={sessions:imported.sessions,notes:imported.notes&&typeof imported.notes==='object'&&!Array.isArray(imported.notes)?imported.notes:{}};save();render();flash('Backup imported successfully');}catch(err){alert('Unable to import: '+err.message);}finally{event.target.value='';}
+});
+if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostname==='localhost'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+render();
+})();
+</script>
+</body>
+</html>
