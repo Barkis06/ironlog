@@ -177,13 +177,35 @@
   .coach-exercise {background:#24372e;border:1px solid #375544;border-radius:10px;color:#c9f7c0;font-weight:800;padding:8px 10px;font-size:12px;min-height:38px;}
   @media(max-width:390px) {.coach-chips {grid-template-columns:1fr;} .nav-btn {font-size:9px;}}
 
+
+  /* In-app AI Coach chat */
+  .coach-access {display:flex;gap:9px;align-items:stretch;margin-top:10px;}
+  .coach-access input {min-width:0;flex:1;border:1px solid #435860;border-radius:11px;background:#1b2630;color:#f3f6f5;padding:12px;font-size:14px;}
+  .coach-access .secondary-btn {white-space:nowrap;}
+  .coach-status {font-size:12px;color:var(--muted);line-height:1.6;margin-top:9px;}
+  .coach-chat {display:flex;flex-direction:column;gap:13px;padding:14px 0;min-height:110px;}
+  .coach-bubble {padding:13px 15px;border-radius:17px;max-width:92%;font-size:13px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere;}
+  .coach-bubble.assistant {align-self:flex-start;color:#dbe5e7;background:#1b2933;border:1px solid #354650;border-bottom-left-radius:5px;}
+  .coach-bubble.user {align-self:flex-end;color:#18311a;background:#c1f68c;border-bottom-right-radius:5px;}
+  .coach-who {font-size:10px;text-transform:uppercase;letter-spacing:.6px;opacity:.68;margin-bottom:5px;font-weight:850;}
+  .coach-empty-chat {border:1px dashed #40534a;border-radius:15px;padding:21px 15px;color:var(--muted);text-align:center;font-size:13px;line-height:1.7;}
+  .coach-error {border:1px solid #795054;background:#352329;padding:11px 13px;border-radius:11px;color:#ffc3c3;font-size:12px;line-height:1.5;}
+  .coach-typing {font-size:12px;color:var(--accent);padding:8px 0;}
+  .coach-chat-input {width:100%;min-height:79px;resize:vertical;background:#1b2630;color:var(--text);border:1px solid #435660;border-radius:12px;padding:12px;font-size:14px;line-height:1.5;}
+  .coach-chat-input:focus {border-color:var(--accent);}
+  .coach-chat-foot {display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:9px;}
+  .coach-meta-note {font-size:11px;line-height:1.5;color:var(--muted);}
+  .coach-hero .coach-setup {color:#d6e7cb;font-size:12px;margin-top:12px;}
+  .coach-actions button:disabled {opacity:.45;cursor:default;}
+  @media(max-width:395px) { .coach-access {flex-direction:column;} .coach-chat-foot {flex-direction:column;align-items:stretch;} }
+
   @media(min-width:650px) { .wrap { padding-left:26px; padding-right:26px; } .hero { padding:31px; } .exercise-card { padding:21px; } .set-head,.set-row { grid-template-columns:54px 1fr 1fr 54px; } }
   @media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none!important; scroll-behavior:auto!important; } }
 </style>
 </head>
 <body>
   <div class="wrap">
-    <header class="brand"><div class="brand-mark"><div class="mark">I</div><span>IRONLOG<span style="color:var(--accent)">.</span></span></div><span class="tiny-tag">STRENGTH / 5 DAYS · v2.2</span></header>
+    <header class="brand"><div class="brand-mark"><div class="mark">I</div><span>IRONLOG<span style="color:var(--accent)">.</span></span></div><span class="tiny-tag">STRENGTH / 5 DAYS · v2.3</span></header>
     <main id="main" aria-live="polite"></main>
     <footer class="footer">Made for your training. Your logs stay on this device.</footer>
   </div>
@@ -293,6 +315,47 @@ let selectedDay=(new Date().getDay()+6)%7;
 let weekOffset=0;
 let chartLift='squat';
 let coachDraft='';
+
+const COACH_HISTORY_KEY='ironlog_coach_history_v1';
+const COACH_ACCESS_KEY='ironlog_coach_access_v1';
+let coachMessages=[];
+try { const history=JSON.parse(localStorage.getItem(COACH_HISTORY_KEY)||'[]'); if(Array.isArray(history))coachMessages=history.filter(m=>m&&['user','assistant'].includes(m.role)&&typeof m.content==='string').slice(-24); } catch {}
+let coachAccessCode='';
+try { coachAccessCode=localStorage.getItem(COACH_ACCESS_KEY)||''; } catch {}
+let coachPending=false;
+let coachError='';
+function saveCoachMessages(){try{localStorage.setItem(COACH_HISTORY_KEY,JSON.stringify(coachMessages.slice(-24)));}catch{}}
+function coachScroll(){requestAnimationFrame(()=>{const last=document.getElementById('coachChatBottom');if(last&&view==='coach')last.scrollIntoView({block:'nearest'});});}
+
+async function submitCoach(){
+ if(coachPending)return;
+ const question=String(document.getElementById('coachQuestion')?.value||'').trim();
+ if(!question){flash('Write a question first.');return;}
+ if(question.length>800){coachError='Please shorten your question to 800 characters.';render();return;}
+ if(coachAccessCode.length<16){coachError='Save your private access code first. It also needs to be configured in Netlify.';render();return;}
+ coachDraft='';coachError='';coachPending=true;
+ coachMessages.push({role:'user',content:question});
+ saveCoachMessages();render();coachScroll();
+ try {
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),30000);
+  let response;
+  try{response=await fetch('/.netlify/functions/coach',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:coachAccessCode,messages:coachMessages.slice(-12)}),signal:controller.signal,cache:'no-store'});}finally{clearTimeout(timeout);}
+  const result=await response.json().catch(()=>({}));
+  if(!response.ok)throw Error(result.error||'The AI Coach is unavailable right now.');
+  if(typeof result.reply!=='string'||!result.reply.trim())throw Error('The coach returned an empty answer. Try again.');
+  coachMessages.push({role:'assistant',content:result.reply.slice(0,4500)});
+  saveCoachMessages();
+ }catch(err){
+  if(coachMessages.at(-1)?.role==='user'&&coachMessages.at(-1)?.content===question){coachMessages.pop();saveCoachMessages();}
+  coachDraft=question;
+  coachError=err.name==='AbortError'?'The request timed out. Try again.':String(err.message||'Unable to connect to the AI Coach.');
+ }finally{
+  coachPending=false;
+  if(view==='coach'){render();coachScroll();}
+ }
+}
+
 let timerUntil=0;
 let timerName='';
 function save() { try { localStorage.setItem(STORAGE_KEY,JSON.stringify(data)); } catch(err) { flash('Saving is blocked. Export your workout as a backup.'); } }
@@ -386,32 +449,27 @@ function progressView(){const history=sessionEntries(),sets=history.reduce((a,b)
 }
 function coachView(){
  const suggestions=[
-  ['Choosing weights','How do I choose my starting weights for each exercise?'],
-  ['Squat technique','How should I squat safely at 194 cm tall?'],
-  ['Exercise swaps','What can I replace an exercise with if a machine is busy?'],
-  ['Getting stronger','How can I tell when to add more weight?'],
-  ['Eating more','What should I eat to get stronger and gain muscle?'],
-  ['Missing a session','What should I do if I miss a gym day?']
+  ['Squat form','What are the most important technique tips for my back squat?'],
+  ['Increase weights','How do I know when to add weight to my bench press?'],
+  ['Exercise replacement','What can I replace Bulgarian split squats with?'],
+  ['Eat to get stronger','How much should I eat to gain weight while training?']
  ];
  const faq=[
-  ['When should I increase my weights?','Only increase when you finish every set and rep with controlled technique and about 1–2 good reps to spare. Try small jumps: 1–2.5 kg for upper-body barbell lifts and 2.5–5 kg for lower-body lifts when appropriate.'],
-  ['Why does my program have no deadlifts?','You said deadlift technique feels difficult. Squats, hip thrusts, leg curls and rows let you train your legs and back while focusing on easier-to-learn setups. You can learn deadlifts later if you want to.'],
-  ['Am I training traps and forearms?','Yes. Friday includes dumbbell shrugs (upper traps), and Wednesday includes reverse wrist curls (forearm extensors). Rows, pull-ups and face pulls also help your upper back and grip.'],
-  ['What if an exercise hurts?','Stop the painful movement. Do not force reps through sharp pain. If pain persists or affects daily activities, ask a qualified healthcare professional or physiotherapist to assess it.'],
-  ['How much protein should I eat?','Your starting target is around 115–145 g of protein daily. To gain strength and body mass, aim for a modest calorie surplus and monitor your weight trend over a few weeks.'],
-  ['Do I need to train to failure?','No. As a beginner, leave roughly 2–3 repetitions in reserve when learning movements. Good form and consistent progressive training matter more than exhausting yourself.']
+  ['Why no deadlifts?','Your program avoids deadlifts because you find the technique difficult. Hip thrusts, squats and leg curls still build useful lower-body strength.'],
+  ['Are traps and forearms included?','Yes. Dumbbell shrugs target the traps on Friday, and reverse wrist curls target forearms on Wednesday.'],
+  ['What should I do if an exercise hurts?','Stop the movement if it causes sharp pain. If pain persists, get advice from a qualified healthcare professional or physiotherapist.']
  ];
- return `<span class="eyebrow">Personal training help</span>
-   <div class="coach-hero" style="margin-top:12px"><span class="eyebrow">✦ IRONLOG COACH</span><h1>Got a gym question?</h1><p>Ask ChatGPT with your exact five-day strength program already included as context. No need to explain your routine every time.</p></div>
-   <div class="coach-card"><label for="coachQuestion">What would you like to ask?</label>
-     <textarea id="coachQuestion" class="coach-question" maxlength="700" placeholder="For example: What if I can't do Bulgarian split squats?">${esc(coachDraft)}</textarea>
-     <div class="coach-actions"><button type="button" class="primary-btn" data-action="coach-ask">✦ Ask ChatGPT ↗</button><button type="button" class="secondary-btn" data-action="coach-copy">Copy with program</button></div>
-     <p class="coach-smallprint">This opens ChatGPT separately; answers won't appear inside IronLog yet. Your question and training plan are pre-filled, but you may need to tap Send. If the prompt doesn't appear, use the Copy button and paste it in ChatGPT. No workout history is sent.</p></div>
-   <div class="section-row"><h2>Try asking</h2><span class="pill green">Program-aware</span></div>
-   <div class="coach-chips">${suggestions.map(([label,q])=>`<button class="coach-chip" type="button" data-action="coach-suggestion" data-question="${esc(q)}">✦ ${esc(label)}</button>`).join('')}</div>
-   <div class="section-row"><h2>Quick answers</h2><span class="pill">Works offline</span></div>
-   ${faq.map(([q,a])=>`<details class="coach-faq"><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}
-   <div class="note"><b>Remember:</b> These quick answers are pre-written reference tips, not live AI. ChatGPT may make mistakes and doesn't replace professional assessment for injuries or persistent pain.</div>`;
+ return `<span class="eyebrow">Your personal training assistant</span>
+ <div class="coach-hero" style="margin-top:12px"><span class="eyebrow">✦ IRONLOG AI COACH</span><h1>Ask anything about your training.</h1><p>Get real AI answers inside IronLog. Your coach knows the five-day strength plan and can answer follow-up questions without you switching apps.</p><div class="coach-setup">Internet and one-time API setup required for live answers.</div></div>
+ <div class="coach-card"><label for="coachAccess">Private AI access code</label><div class="coach-access"><input id="coachAccess" type="password" value="${esc(coachAccessCode)}" placeholder="Your private access code" autocomplete="off" minlength="16" maxlength="120"/><button class="secondary-btn" type="button" data-action="coach-save-access">Save code</button></div><p class="coach-status">${coachAccessCode.length>=16?'Access code saved on your device.':'Setup needed — enter the access code you created in Netlify.'} This is <b>not</b> your OpenAI API key. Never paste the API key here.</p></div>
+ <div class="section-row"><h2>Coach conversation</h2><button class="tiny-btn" type="button" data-action="coach-new" ${coachPending?'disabled':''}>+ New chat</button></div>
+ <div class="coach-chat" role="log" aria-label="AI Coach conversation" aria-live="polite">${coachMessages.length?coachMessages.map(m=>`<div class="coach-bubble ${m.role}"><div class="coach-who">${m.role==='user'?'You':'IronLog Coach'}</div>${esc(m.content)}</div>`).join(''):'<div class="coach-empty-chat">✦<br/>Ask about exercise technique, substitutions, nutrition, progression or recovery.<br/>Your answers appear here.</div>'}${coachPending?'<div class="coach-typing" role="status">✦ Coach is thinking…</div>':''}<div id="coachChatBottom"></div></div>
+ ${coachError?`<div class="coach-error" role="alert">${esc(coachError)}</div>`:''}
+ <div class="coach-card"><label for="coachQuestion">Your message</label><textarea id="coachQuestion" class="coach-chat-input" maxlength="800" placeholder="Ask me anything about the gym…" ${coachPending?'disabled':''}>${esc(coachDraft)}</textarea><div class="coach-chat-foot"><span class="coach-meta-note">Up to 800 characters.<br/>Chat history saves only on this device.</span><button class="primary-btn" type="button" data-action="coach-ask" ${coachPending?'disabled':''}>✦ Send message</button></div><p class="coach-smallprint">Recent messages are sent to OpenAI to answer. Workout logs are not sent. API usage is separately billed and not included in ChatGPT subscriptions.</p></div>
+ <div class="section-row"><h2>Try asking</h2></div><div class="coach-chips">${suggestions.map(([label,q])=>`<button class="coach-chip" type="button" data-action="coach-suggestion" data-question="${esc(q)}">✦ ${esc(label)}</button>`).join('')}</div>
+ <div class="section-row"><h2>Quick answers</h2><span class="pill">Offline</span></div>${faq.map(([q,a])=>`<details class="coach-faq"><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}
+ <div class="coach-card"><h3>Still setting up the AI?</h3><p class="coach-smallprint">You can ask ChatGPT in a separate window until your Netlify API configuration is ready.</p><button type="button" class="secondary-btn" data-action="coach-handoff">Open ChatGPT ↗</button></div>
+ <div class="note"><b>Safety:</b> AI advice can be wrong. Stop movements that hurt and seek qualified evaluation for persistent pain.</div>`;
 }
 function coachPrompt(question){
  return [
@@ -443,13 +501,22 @@ document.body.addEventListener('click',event=>{
  
   if(a==='coach-suggestion'){coachDraft=btn.dataset.question||'';render();scrollTop();document.getElementById('coachQuestion')?.focus();return;}
   if(a==='coach-exercise'){coachDraft='How do I perform '+(btn.dataset.name||'this exercise')+' with correct technique, and what mistakes should I avoid?';view='coach';render();scrollTop();return;}
-  if(a==='coach-ask'){
-   const q=String(document.getElementById('coachQuestion')?.value||'').trim();
-   if(!q){flash('Write a question first.');document.getElementById('coachQuestion')?.focus();return;}
-   coachDraft=q;
-   window.open('https://chatgpt.com/?q='+encodeURIComponent(coachPrompt(q)),'_blank','noopener,noreferrer');
-   flash('Opening ChatGPT. Tap Send there to ask.');
-   return;
+  if(a==='coach-ask'){submitCoach();return;}
+  if(a==='coach-save-access'){
+   const code=String(document.getElementById('coachAccess')?.value||'').trim();
+   if(code.length<16){coachError='Your access code must be at least 16 characters long and match the code in Netlify.';render();return;}
+   coachAccessCode=code;
+   try{localStorage.setItem(COACH_ACCESS_KEY,code)}catch{}
+   coachError='';render();flash('Private code saved on this device.');return;
+  }
+  if(a==='coach-new'){
+   if(coachPending)return;
+   if(coachMessages.length&&!confirm('Start a new coach conversation? This clears AI chat history on this device, not your workout logs.'))return;
+   coachMessages=[];coachDraft='';coachError='';saveCoachMessages();render();return;
+  }
+  if(a==='coach-handoff'){
+   const q=String(document.getElementById('coachQuestion')?.value||coachDraft||'How should I progress my 5-day strength plan?').trim();
+   window.open('https://chatgpt.com/?q='+encodeURIComponent(coachPrompt(q)),'_blank','noopener,noreferrer');return;
   }
   if(a==='coach-copy'){
    const q=String(document.getElementById('coachQuestion')?.value||'').trim();
