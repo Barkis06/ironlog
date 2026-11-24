@@ -1,4 +1,4 @@
-IRONLOG — PERSONAL 5-DAY STRENGTH WORKOUT APP
+IRONLOG — TWO-PROFILE WORKOUT TRACKER
 
 WHAT'S INCLUDED
 - index.html: the complete app (no external libraries or accounts required)
@@ -60,3 +60,9 @@ NOTES
 The app is a Progressive Web App (PWA), not an App Store/iOS .ipa or Android .apk.
 For gym training, start with a light, technically controlled weight and increase
 load only when all prescribed reps can be done with good technique.
+
+
+TWO PROFILES (v2.6)
+Use the My profile / Girlfriend selector above the workout. Each profile has an independent training program, workout notes, progress charts, and backup file. Your existing data stays under the original ironlog_strength_v1 key. Girlfriend sessions start empty under ironlog_girlfriend_v1. Both use Friday and Saturday rest days.
+Girlfriend plan: Monday legs/glutes A; Tuesday chest/back; Wednesday abs/core/cardio; Thursday legs/glutes B; Friday/Saturday rest; Sunday upper body and cardio. No direct shoulder isolation.
+Each profile must be backed up separately through More > Export backup. Older IronLog backups without a profile tag belong to My profile. No automatic sync between phones or installed web apps.

@@ -177,13 +177,22 @@
   .coach-exercise {background:#24372e;border:1px solid #375544;border-radius:10px;color:#c9f7c0;font-weight:800;padding:8px 10px;font-size:12px;min-height:38px;}
   @media(max-width:390px) {.coach-chips {grid-template-columns:1fr;} .nav-btn {font-size:9px;}}
 
+  .profile-switch{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:5px;background:#151e28;border:1px solid #364550;border-radius:15px;margin:-8px 0 18px;}
+  .profile-choice{background:transparent;border:1px solid transparent;border-radius:11px;min-height:44px;color:#a5b5c0;font-size:13px;font-weight:800;}
+  .profile-choice.active{background:var(--accent);color:#192c18;border-color:#cbffa0;}
+  .profile-info{font-size:11px;line-height:1.5;text-align:center;color:var(--muted);margin:-7px 0 17px;}
   @media(min-width:650px) { .wrap { padding-left:26px; padding-right:26px; } .hero { padding:31px; } .exercise-card { padding:21px; } .set-head,.set-row { grid-template-columns:54px 1fr 1fr 54px; } }
   @media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none!important; scroll-behavior:auto!important; } }
 </style>
 </head>
 <body>
   <div class="wrap">
-    <header class="brand"><div class="brand-mark"><div class="mark">I</div><span>IRONLOG<span style="color:var(--accent)">.</span></span></div><span class="tiny-tag">STRENGTH / 5 DAYS · v2.5</span></header>
+    <header class="brand"><div class="brand-mark"><div class="mark">I</div><span>IRONLOG<span style="color:var(--accent)">.</span></span></div><span class="tiny-tag">5 DAY PLAN · v2.6</span></header>
+    <div id="profileSwitch" class="profile-switch" role="group" aria-label="Select workout profile">
+      <button type="button" data-action="profile" data-value="me" class="profile-choice" aria-pressed="true">👤 My profile</button>
+      <button type="button" data-action="profile" data-value="girlfriend" class="profile-choice" aria-pressed="false">♡ Girlfriend</button>
+    </div>
+    <p class="profile-info" id="profileInfo">Each profile has separate workouts, logs and progress.</p>
     <main id="main" aria-live="polite"></main>
     <footer class="footer">Made for your training. Your logs stay on this device.</footer>
   </div>
@@ -194,10 +203,15 @@
 <script>
 (() => {
 'use strict';
-const STORAGE_KEY = 'ironlog_strength_v1';
+const STORAGE_KEY = 'ironlog_strength_v1'; // original data key: never change
+const GF_STORAGE_KEY = 'ironlog_girlfriend_v1';
+const PROFILE_KEY = 'ironlog_current_profile_v1';
+let profile='me';
+try{if(localStorage.getItem(PROFILE_KEY)==='girlfriend')profile='girlfriend';}catch{}
+function storageKey(){return profile==='girlfriend'?GF_STORAGE_KEY:STORAGE_KEY;}
 const dayNames = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 const shortDays = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-const R = [
+const MY_R = [
  {name:'Lower Body A', focus:'Squat strength', duration:'55–65 min', exercises:[
   e('squat','Barbell Back Squat',3,5,5,180,'kg',2.5,'Controlled depth; use safety bars.'),
   e('hip1','Hip Thrust Machine',3,8,8,120,'kg',5,'Keep ribs down; full glute contraction.'),
@@ -241,6 +255,45 @@ const R = [
   e('shrugs','Dumbbell Shrugs',2,10,15,90,'kg',1,'NEW · Lift shoulders upward, not in circles.')
  ]},
 ];
+const GF_R=[
+{name:'Glutes & Legs A',focus:'Glute development and lower-body strength',duration:'45–55 min',exercises:[
+ e('gfHipMon','Hip Thrust Machine',3,10,12,120,'kg',2.5,'Drive through your feet; squeeze glutes without arching your back.'),
+ e('gfPress','Leg Press',3,10,12,120,'kg',5,'Keep your whole back in contact with the pad.'),
+ e('gfCurlMon','Seated Leg Curl',2,12,12,75,'kg',2.5,'Controlled reps without swinging.'),
+ e('gfAbductMon','Hip Abduction Machine',2,15,15,60,'kg',2.5,'Open the knees gradually; do not swing.'),
+ e('gfCalf','Standing Calf Raises',2,15,15,60,'kg',2.5,'Rise and lower slowly.')
+]},
+{name:'Chest & Back',focus:'Balanced upper body · no direct shoulder isolation',duration:'35–45 min',exercises:[
+ e('gfChestTue','Chest Press Machine',2,10,12,90,'kg',2.5,'Keep the chest lifted and shoulders comfortable.'),
+ e('gfLatTue','Lat Pulldown',2,10,12,90,'kg',2.5,'Pull toward the upper chest without rocking.'),
+ e('gfRowTue','Seated Cable Row',2,12,12,90,'kg',2.5,'Pull with elbows, keeping a neutral spine.'),
+ e('gfPec','Pec Deck Chest Fly',2,12,12,75,'kg',2.5,'Keep elbows comfortably bent; avoid extreme stretch.')
+]},
+{name:'Abs, Core & Cardio',focus:'Cardiovascular fitness and core stability',duration:'35–45 min',exercises:[
+ e('gfWalk','Incline Treadmill Walk',1,20,25,0,'min',0,'Keep a comfortable pace and upright posture.'),
+ e('gfCableCrunch','Cable Crunch',2,12,15,60,'kg',2.5,'Bring ribs down toward pelvis without pulling with arms.'),
+ e('gfReverse','Reverse Crunch',2,12,12,60,'reps',0,'Tilt the pelvis upward rather than swinging your legs.'),
+ e('gfDeadbug','Dead Bug',2,10,10,60,'reps',0,'10 reps per side; keep back supported.'),
+ e('gfPlank','Plank',2,30,30,60,'sec',0,'Breathe steadily during the hold.')
+]},
+{name:'Glutes & Legs B',focus:'Legs and glutes',duration:'45–55 min',exercises:[
+ e('gfHack','Hack Squat Machine',3,10,10,120,'kg',5,'Adjust foot position for comfortable squat depth.'),
+ e('gfSplit','Bulgarian Split Squat',2,8,8,90,'kg',1,'8 reps per leg; start bodyweight-only if needed.'),
+ e('gfHipThu','Hip Thrust Machine',2,10,10,120,'kg',2.5,'Move steadily and avoid arching your back.'),
+ e('gfCurlThu','Seated Leg Curl',2,12,12,75,'kg',2.5,'Smooth reps without momentum.'),
+ e('gfAbductThu','Hip Abduction Machine',2,15,15,60,'kg',2.5,'Slow return; avoid jerking.')
+]},
+{name:'Rest & Recover',focus:'Full rest',duration:'—',exercises:[]},
+{name:'Rest & Recover',focus:'Full rest',duration:'—',exercises:[]},
+{name:'Upper Body & Cardio',focus:'Chest, back, arms and fitness',duration:'45–55 min',exercises:[
+ e('gfLatSun','Lat Pulldown',2,12,12,90,'kg',2.5,'Pull with control and avoid rocking.'),
+ e('gfChestSun','Chest Press Machine',2,12,12,90,'kg',2.5,'Steady press without pushing into pain.'),
+ e('gfRowSun','Seated Cable Row',2,12,12,90,'kg',2.5,'Keep chest up and move smoothly.'),
+ e('gfTri','Triceps Rope Pushdown',2,12,12,60,'kg',2.5,'Keep elbows close to the torso.'),
+ e('gfBicep','Dumbbell Biceps Curl',2,12,12,60,'kg',1,'Log one dumbbell’s weight.'),
+ e('gfCycle','Treadmill or Cycling',1,15,20,0,'min',0,'Choose a comfortable pace at a moderate effort.')
+]}];
+let R=profile==='girlfriend'?GF_R:MY_R;
 function e(id,name,sets,min,max,rest,unit,step,note) {return {id,name,sets,min,max,rest,unit,step,note};}
 const FORM_GUIDES = {
  squat:{muscles:'Quads · glutes · core',steps:['Place the bar across your upper back, brace your abdomen, and step back from the rack.','Set feet about shoulder-width apart, then bend hips and knees together to lower under control.','Push through your whole foot to stand up, keeping the bar balanced over mid-foot.'],avoid:'Keep your heels down and back stable. Set safety bars before attempting working sets.'},
@@ -257,6 +310,12 @@ const FORM_GUIDES = {
  hammer:{muscles:'Brachioradialis · forearms · biceps',steps:['Stand tall holding light dumbbells at your sides, palms facing inward.','Keeping elbows near your sides, bend your elbows to raise the dumbbells.','Lower slowly without turning your palms or leaning back.'],avoid:'Do not swing weights or twist the wrists; start light and stop for sharp pain.'},
  wristFlex:{muscles:'Wrist flexors · forearms',steps:['Sit with forearms supported on your thighs or a bench, palms facing upward.','Allow your wrists to lower gently while keeping forearms still.','Curl your palms upward using a very light dumbbell, then lower slowly.'],avoid:'Do not bounce, force the wrist range, or use heavy weights; stop if your wrists hurt.'},
  reverseCrunch:{muscles:'Abdominals · core',steps:['Lie on your back with knees bent and feet lifted, keeping your lower back comfortable.','Tighten your abs to tip your pelvis and gently raise your hips a little off the floor.','Lower slowly without swinging your legs.'],avoid:'Do not throw your knees toward your chest or pull with momentum.'},
+ gfChestTue:{muscles:'Chest · triceps',steps:['Adjust the seat so the handles are level with the middle of your chest.','Press forward, maintaining comfortable shoulder alignment.','Return slowly without letting your shoulders roll forward.'],avoid:'Do not over-extend your elbows or press through shoulder pain.'},
+ gfPec:{muscles:'Chest',steps:['Adjust the pads or handles to chest height and keep your back against the seat.','Bring your forearms or hands toward each other in front of the chest.','Slowly open to a comfortable stretch without pushing too far back.'],avoid:'Avoid heavy weights or painful, deep shoulder stretches.'},
+ gfAbductMon:{muscles:'Outer glutes · hip abductors',steps:['Adjust the pads at your outer thighs and sit firmly against the seat.','Push your knees outward smoothly without rocking your torso.','Return slowly to your starting position.'],avoid:'Do not throw your knees outward with momentum.'},
+ gfCableCrunch:{muscles:'Abdominals',steps:['Kneel at a high cable pulley and hold the rope near your temples.','Bring your ribs toward your pelvis, gently curling your torso downward.','Return to the starting position with control.'],avoid:'Avoid yanking with your arms or using momentum from your hips.'},
+ gfDeadbug:{muscles:'Deep core · abs',steps:['Lie face-up with arms toward the ceiling and hips and knees bent.','Slowly extend one arm and the opposite leg toward the floor.','Return, switch sides and keep the lower back controlled.'],avoid:'Stop extending before your lower back arches excessively.'},
+ gfWalk:{muscles:'Heart · legs · cardiovascular fitness',steps:['Start on a flat treadmill at a comfortable walking pace.','Increase the incline modestly as long as you can stand upright.','Maintain an effort that still allows conversation for 20–25 minutes.'],avoid:'Do not use an incline so steep that you need to lean heavily on handrails.'},
  facePull:{muscles:'Rear shoulders · upper back · traps',steps:['Set the rope at face or forehead height and stand with a stable stance.','Pull the rope toward your face as your elbows move outward.','Squeeze your upper back lightly and return with control.'],avoid:'Keep your ribs down and avoid leaning back to move more weight.'},
  curlWed:{muscles:'Biceps · forearms',steps:['Stand tall with dumbbells by your sides and palms facing forward.','Bend your elbows to raise the weights while your upper arms stay close to your sides.','Lower slowly until your elbows straighten comfortably.'],avoid:'Avoid leaning back or swinging your elbows forward.'},
  wrist:{muscles:'Forearm extensors',steps:['Sit and rest your forearms on your thighs or a bench with palms facing down.','Let your wrists move slightly downward, then lift the backs of your hands toward your forearms.','Use very light weights and lower slowly.'],avoid:'Only move at the wrist. Stop if you feel sharp wrist pain.'},
@@ -272,7 +331,7 @@ const FORM_GUIDES = {
  laterals:{muscles:'Side deltoids',steps:['Stand tall holding light dumbbells at your sides.','With slight elbow bend, raise arms out to the sides to about shoulder height.','Lower slowly without swinging.'],avoid:'Avoid hiking your shoulders or lifting with momentum.'},
  shrugs:{muscles:'Upper traps · grip',steps:['Stand upright with dumbbells at your sides and arms straight.','Raise your shoulders straight upward toward your ears.','Pause briefly at the top and lower slowly.'],avoid:'Do not roll your shoulders in circles or jerk heavy weights.'}
 };
-const GUIDE_ALIASES = {hip2:'hip1',curl2:'curl1',curlFri:'curlWed'};
+const GUIDE_ALIASES = {hip2:'hip1',curl2:'curl1',curlFri:'curlWed',gfHipMon:'hip1',gfHipThu:'hip1',gfPress:'legpress',gfCurlMon:'curl1',gfCurlThu:'curl1',gfAbductThu:'gfAbductMon',gfLatTue:'latPulldown',gfLatSun:'latPulldown',gfRowTue:'cableRow',gfRowSun:'cableRow',gfChestSun:'gfChestTue',gfCalf:'calf1',gfReverse:'reverseCrunch',gfPlank:'plank',gfHack:'hack',gfSplit:'split',gfTri:'triPush',gfBicep:'curlWed',gfCycle:'gfWalk'};
 function guideFor(ex) {return FORM_GUIDES[GUIDE_ALIASES[ex.id]||ex.id] || {muscles:'Full body',steps:[ex.note],avoid:'Use a comfortable range of motion and controlled technique.'};}
 function videoLink(ex) {
  const phrase = ex.id==='mobility' ? 'beginner hips shoulders mobility gym routine' : ex.name + ' how to exercise proper form tutorial';
@@ -288,7 +347,7 @@ const timerDock=document.getElementById('timerDock');
 const timerText=document.getElementById('timerText');
 const toast=document.getElementById('toast');
 let toastTimeout;
-function getSaved() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch(err) { return {}; } }
+function getSaved() { try { return JSON.parse(localStorage.getItem(storageKey()) || '{}'); } catch(err) { return {}; } }
 let data = getSaved();
 if (!data || typeof data !== 'object' || Array.isArray(data)) data={};
 if (!data.sessions || typeof data.sessions !== 'object' || Array.isArray(data.sessions)) data.sessions={};
@@ -296,11 +355,11 @@ if (!data.notes || typeof data.notes !== 'object' || Array.isArray(data.notes)) 
 let view='today';
 let selectedDay=(new Date().getDay()+6)%7;
 let weekOffset=0;
-let chartLift='squat';
+let chartLift=profile==='girlfriend'?'gfHipMon':'squat';
 let coachDraft='';
 let timerUntil=0;
 let timerName='';
-function save() { try { localStorage.setItem(STORAGE_KEY,JSON.stringify(data)); } catch(err) { flash('Saving is blocked. Export your workout as a backup.'); } }
+function save() { try { localStorage.setItem(storageKey(),JSON.stringify(data)); } catch(err) { flash('Saving is blocked. Export your workout as a backup.'); } }
 function flash(msg) { toast.textContent=msg; toast.style.display='block'; clearTimeout(toastTimeout); toastTimeout=setTimeout(()=>toast.style.display='none',3000); }
 function esc(x) { return String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function pad(n) { return String(n).padStart(2,'0'); }
@@ -332,6 +391,30 @@ const navIcon={
  coach:'<svg viewBox="0 0 24 24"><path d="m12 3 1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3Z"/><path d="M19 17v4M17 19h4M4 17v3M2.5 18.5h3"/></svg>',
  more:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"/></svg>'
 };
+function renderProfileSwitch(){
+ document.querySelectorAll('#profileSwitch .profile-choice').forEach(b=>{
+  const active=b.dataset.value===profile;
+  b.classList.toggle('active',active);
+  b.setAttribute('aria-pressed',String(active));
+ });
+ const status=document.getElementById('profileInfo');
+ if(status)status.textContent=profile==='girlfriend'?'Girlfriend profile · Glutes, fitness & body recomposition · Private to this device':'My profile · Strength training · Private to this device';
+}
+function chooseProfile(next){
+ if(!['me','girlfriend'].includes(next)||next===profile)return;
+ profile=next;
+ try{localStorage.setItem(PROFILE_KEY,next)}catch{}
+ R=profile==='girlfriend'?GF_R:MY_R;
+ data=getSaved();
+ if(!data||typeof data!=='object'||Array.isArray(data))data={};
+ if(!data.sessions||typeof data.sessions!=='object'||Array.isArray(data.sessions))data.sessions={};
+ if(!data.notes||typeof data.notes!=='object'||Array.isArray(data.notes))data.notes={};
+ chartLift=profile==='girlfriend'?'gfHipMon':'squat';
+ coachDraft='';weekOffset=0;selectedDay=(new Date().getDay()+6)%7;
+ timerUntil=0;timerDock.classList.remove('visible');
+ render();scrollTop();
+ flash(profile==='girlfriend'?'Girlfriend profile selected':'My profile selected');
+}
 function renderNav(){document.getElementById('nav').innerHTML=[['today','Workout'],['plan','Full Plan'],['coach','AI Coach'],['progress','Progress'],['more','More']].map(([v,label])=>`<button class="nav-btn ${view===v?'active':''}" data-action="nav" data-value="${v}" aria-label="${label}">${navIcon[v]}<span>${label}</span></button>`).join('');}
 function weekAndDays(){
  const monday=mondayOfWeek(weekOffset);const sunday=new Date(monday);sunday.setDate(sunday.getDate()+6);
@@ -356,11 +439,11 @@ function todayView(){
   const sug=suggestion(ex,date),unit=ex.unit==='kg'?'REPS':ex.unit.toUpperCase();
   html+=`<section class="exercise-card"><div class="exercise-top"><span class="exercise-index">${pad(n+1)}</span><div class="exercise-name"><h3>${esc(ex.name)}${['wrist','shrugs','hammer','wristFlex','reverseCrunch'].includes(ex.id)?'<span class="new-tag">ADDED</span>':''}</h3><p>${ex.sets} ${ex.sets===1?'set':'sets'} × ${target(ex)} ${ex.unit==='kg'?'reps':ex.unit} · ${restText(ex.rest)}</p></div>${ex.rest?`<button class="rest-button" data-action="rest" data-id="${ex.id}" data-day="${selectedDay}">⏱ Rest</button>`:''}</div><div class="set-head"><span>SET</span><span>KG</span><span>${unit}</span><span>DONE</span></div>${rows}<div class="exercise-bottom"><span>${esc(ex.note)}</span>${sug?`<strong>${esc(sug)}</strong>`:''}</div>${guideHtml(ex,'workout')}</section>`;
  });
- html+=`<div class="note"><b>How to log:</b> Enter your weight and reps, then tap ○ to finish each set. If reps are blank when you check a set, the prescribed minimum is used. For dumbbells, log the weight of one dumbbell. The next workout uses your previous logs to suggest a weight.</div>`;
+ html+=`<div class="note"><b>How to log:</b> Enter your weight and reps, then tap ○ to finish each set. If reps are blank when you check a set, the prescribed minimum is used. For dumbbells, log the weight of one dumbbell. The next workout uses only the selected profile's previous logs to suggest a weight.</div>`;
  html+=`<div class="section-row"><h2>Workout notes</h2><span class="muted small">Optional</span></div><textarea class="textarea" data-field="notes" data-date="${date}" placeholder="How did the session feel? Technique tips, energy, etc.">${esc(data.notes[date]||'')}</textarea>`;
  return html;
 }
-function planView(){let html=`<span class="eyebrow">Your training blueprint</span><h1 style="margin-top:10px">The full plan.</h1><p class="top-muted">Four strength-focused sessions, one lighter forearm, wrist and core day. No deadlifts or Romanian deadlifts.</p>`;
+function planView(){let html=`<span class="eyebrow">Your training blueprint</span><h1 style="margin-top:10px">The full plan.</h1><p class="top-muted">${profile==='girlfriend'?'Two leg/glute days, two upper-body days and one cardio/core day, with no direct shoulder isolation.':'Four strength-focused sessions, one lighter forearm, wrist and core day. No deadlifts or Romanian deadlifts.'}</p>`;
  html+=`<div class="note"><b>Rule:</b> Warm up 5–10 minutes and do lighter ramp-up sets before your first major lift. Start with 2–3 reps in reserve. Increase load only when technique and target reps are solid.</div>`;
  R.forEach((d,i)=>{
   html+=`<div class="day-plan"><div class="day-plan-top"><div><span class="eyebrow">${dayNames[i]}</span><h3 style="margin-top:5px">${esc(d.name)}</h3></div><button class="${d.exercises.length?'secondary-btn':'tiny-btn'}" data-action="open-day" data-value="${i}">${d.exercises.length?'Log session':'Rest day'}</button></div><p class="focus">${esc(d.focus)} · ${esc(d.duration)}</p>${d.exercises.length?`<div class="plan-exercises">${d.exercises.map(ex=>`<div class="plan-entry"><div class="plan-entry-head"><span class="plan-entry-name">${esc(ex.name)}</span><span class="plan-entry-reps">${ex.sets} × ${target(ex)} ${ex.unit==='kg'?'reps':ex.unit}</span></div>${guideHtml(ex,'plan')}</div>`).join('')}</div>`:'<div class="plan-line"><span>Recovery, hydration and sleep</span><span>—</span></div>'}</div>`;
@@ -380,7 +463,7 @@ function chartMarkup(id){const pts=[];
  const labels=p.map((v,i)=>(i===0||i===p.length-1||p.length<=4)?`<text x="${v.x}" y="${height-9}" text-anchor="middle" font-size="9" fill="#97aab3">${esc(dateShort(new Date(arr[i].date+'T12:00:00')))}</text>`:'').join('');
  return `<svg class="chart" viewBox="0 0 ${width} ${height}" aria-label="Logged maximum working weights over time, kilograms" role="img">${grid}${line}${dots}${labels}</svg><p class="small muted" style="margin-bottom:0">Heaviest completed working set (kg) per logged session. Up to 10 entries.</p>`;
 }
-function historicalWorkoutName(date,day){
+function historicalWorkoutName(date,day){if(profile==='girlfriend')return R[day].name;
  const ids=Object.keys(data.sessions?.[date]||{});
  if(ids.some(id=>['ohp','incline','shrugs','pullups','chestRow'].includes(id)))return 'Upper Body B';
  if(ids.some(id=>['squat','legpress','hip1'].includes(id)))return 'Lower Body A';
@@ -389,7 +472,7 @@ function historicalWorkoutName(date,day){
  if(ids.includes('cardio'))return 'Light Day + Core (previous plan)';
  return R[day].name;
 }
-function progressView(){const history=sessionEntries(),sets=history.reduce((a,b)=>a+b.count,0),vol=history.reduce((a,b)=>a+b.vol,0); const lifts=[['squat','Back Squat'],['bench','Bench Press'],['ohp','Overhead Press'],['hack','Hack Squat'],['hip1','Hip Thrust Machine'],['shrugs','Dumbbell Shrugs'],['wrist','Reverse Wrist Curls']];
+function progressView(){const history=sessionEntries(),sets=history.reduce((a,b)=>a+b.count,0),vol=history.reduce((a,b)=>a+b.vol,0); const lifts=profile==='girlfriend'?[['gfHipMon','Hip Thrust'],['gfPress','Leg Press'],['gfHack','Hack Squat'],['gfChestTue','Chest Press'],['gfLatTue','Lat Pulldown'],['gfAbductMon','Hip Abduction']]:[['squat','Back Squat'],['bench','Bench Press'],['ohp','Overhead Press'],['hack','Hack Squat'],['hip1','Hip Thrust Machine'],['shrugs','Dumbbell Shrugs'],['wrist','Reverse Wrist Curls']];
  let html=`<span class="eyebrow">Your hard work, measured</span><h1 style="margin-top:10px">Keep getting stronger.</h1><p class="top-muted">Your data is stored locally in this browser. Every checked-off set counts toward your history.</p><div class="stats"><div class="stat"><strong>${history.length}</strong><span>Sessions logged</span></div><div class="stat"><strong>${sets}</strong><span>Sets finished</span></div><div class="stat"><strong>${vol>=1000?(vol/1000).toFixed(1)+'k':Math.round(vol)}</strong><span>Approx. kg × reps</span></div></div>`;
  html+=`<div class="section-row"><h2>Weight progress</h2></div><div class="chart-card"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px"><b style="font-size:13px">Top working weight</b><select id="chartLift" aria-label="Choose exercise for progress chart">${lifts.map(([id,name])=>`<option value="${id}" ${chartLift===id?'selected':''}>${esc(name)}</option>`).join('')}</select></div>${chartMarkup(chartLift)}</div>`;
  html+=`<div class="section-row"><h2>Recent workouts</h2><span class="pill">${history.length} total</span></div>`;
@@ -399,7 +482,15 @@ function progressView(){const history=sessionEntries(),sets=history.reduce((a,b)
  return html;
 }
 function coachView(){
- const suggestions=[
+ const her=profile==='girlfriend';
+ const questions=her?[
+  ['Glute training','How can my girlfriend improve her glute strength as a beginner?'],
+  ['Waist & abs','How do ab exercises affect waist definition?'],
+  ['Fitness','How should she increase cardio gradually?'],
+  ['Choosing weights','What weight should a beginner choose on her first set?'],
+  ['Chest/back','How can she train chest and back without direct shoulder isolation?'],
+  ['Recovery','What should she do if her legs are sore on Thursday?']
+ ]:[
   ['Choosing weights','How do I choose my starting weights for each exercise?'],
   ['Squat technique','How should I squat safely at 194 cm tall?'],
   ['Exercise swaps','What can I replace an exercise with if a machine is busy?'],
@@ -407,45 +498,55 @@ function coachView(){
   ['Eating more','What should I eat to get stronger and gain muscle?'],
   ['Missing a session','What should I do if I miss a gym day?']
  ];
- const faq=[
-  ['When should I increase my weights?','Only increase when you finish every set and rep with controlled technique and about 1–2 good reps to spare. Try small jumps: 1–2.5 kg for upper-body barbell lifts and 2.5–5 kg for lower-body lifts when appropriate.'],
-  ['Why does my program have no deadlifts?','You said deadlift technique feels difficult. Squats, hip thrusts, leg curls and rows let you train your legs and back while focusing on easier-to-learn setups. You can learn deadlifts later if you want to.'],
-  ['Am I training traps and forearms?','Yes. Sunday includes dumbbell shrugs (upper traps). Wednesday has reverse wrist curls (extensors), seated wrist curls (flexors) and hammer curls (brachioradialis and grip).'],
-  ['What if an exercise hurts?','Stop the painful movement. Do not force reps through sharp pain. If pain persists or affects daily activities, ask a qualified healthcare professional or physiotherapist to assess it.'],
-  ['How much protein should I eat?','Your starting target is around 115–145 g of protein daily. To gain strength and body mass, aim for a modest calorie surplus and monitor your weight trend over a few weeks.'],
-  ['Do I need to train to failure?','No. As a beginner, leave roughly 2–3 repetitions in reserve when learning movements. Good form and consistent progressive training matter more than exhausting yourself.']
+ const faq=her?[
+  ['Can abs remove belly fat?','Core exercises strengthen the abs but do not selectively remove belly fat. Fitness and body composition changes take time.'],
+  ['Will chest/back work train shoulders?','Chest presses, rows and pulldowns work the shoulders indirectly. No direct shoulder isolation is included.'],
+  ['Should she lose weight quickly?','No. As a beginner, she can focus on fitness and gradual muscle development rather than aggressive weight loss.'],
+  ['How heavy should she lift?','Start light with controlled movements and about 2–3 repetitions left in reserve. Add weight gradually.']
+ ]:[
+  ['When should I increase my weights?','Increase gradually after finishing all sets at the top of the rep range with controlled technique and about 1–2 good reps left.'],
+  ['Why no deadlifts?','You found deadlift technique difficult; squats, hip thrusts, leg curls and rows train your body without requiring that movement.'],
+  ['Are my traps and forearms trained?','Yes. Sunday includes shrugs. Wednesday has reverse wrist curls, seated wrist curls and hammer curls.'],
+  ['How much protein?','Your current starting guide is around 115–145 g protein daily, alongside adequate calories and sleep.']
  ];
- return `<span class="eyebrow">Personal training help</span>
-   <div class="coach-hero" style="margin-top:12px"><span class="eyebrow">✦ IRONLOG COACH</span><h1>Got a gym question?</h1><p>Ask ChatGPT with your exact five-day strength program already included as context. No need to explain your routine every time.</p></div>
-   <div class="coach-card"><label for="coachQuestion">What would you like to ask?</label>
-     <textarea id="coachQuestion" class="coach-question" maxlength="700" placeholder="For example: What if I can't do Bulgarian split squats?">${esc(coachDraft)}</textarea>
-     <div class="coach-actions"><button type="button" class="primary-btn" data-action="coach-ask">✦ Ask ChatGPT ↗</button><button type="button" class="secondary-btn" data-action="coach-copy">Copy with program</button></div>
-     <p class="coach-smallprint">This free option opens ChatGPT in a separate tab using your existing account, with your question and gym program attached as context. If the question does not appear in ChatGPT, use Copy with program and paste it there. No workout history is shared and no API key is needed.</p></div>
-   <div class="section-row"><h2>Try asking</h2><span class="pill green">Program-aware</span></div>
-   <div class="coach-chips">${suggestions.map(([label,q])=>`<button class="coach-chip" type="button" data-action="coach-suggestion" data-question="${esc(q)}">✦ ${esc(label)}</button>`).join('')}</div>
-   <div class="section-row"><h2>Quick answers</h2><span class="pill">Works offline</span></div>
-   ${faq.map(([q,a])=>`<details class="coach-faq"><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}
-   <div class="note"><b>Remember:</b> These quick answers are pre-written reference tips, not live AI. ChatGPT may make mistakes and doesn't replace professional assessment for injuries or persistent pain.</div>`;
+ return `<span class="eyebrow">Training help · ${her?'Girlfriend':'My profile'}</span>
+  <div class="coach-hero" style="margin-top:12px"><span class="eyebrow">✦ IRONLOG COACH</span><h1>Got a gym question?</h1><p>Ask ChatGPT with ${her?"your girlfriend's program":"your strength program"} already included, without sending private workout logs.</p></div>
+  <div class="coach-card"><label for="coachQuestion">What would you like to ask?</label><textarea id="coachQuestion" class="coach-question" maxlength="700" placeholder="Ask about exercise technique, fitness or progress…">${esc(coachDraft)}</textarea>
+  <div class="coach-actions"><button type="button" class="primary-btn" data-action="coach-ask">✦ Ask ChatGPT ↗</button><button type="button" class="secondary-btn" data-action="coach-copy">Copy with program</button></div>
+  <p class="coach-smallprint">This free option opens ChatGPT in a separate tab, with the selected profile's program and your question. No API key or paid API needed. If the question does not appear, use Copy with program and paste it into ChatGPT.</p></div>
+  <div class="section-row"><h2>Try asking</h2><span class="pill green">Program-aware</span></div>
+  <div class="coach-chips">${questions.map(([label,q])=>`<button class="coach-chip" type="button" data-action="coach-suggestion" data-question="${esc(q)}">✦ ${esc(label)}</button>`).join('')}</div>
+  <div class="section-row"><h2>Quick answers</h2><span class="pill">Works offline</span></div>
+  ${faq.map(([q,a])=>`<details class="coach-faq"><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}
+  <div class="note"><b>Remember:</b> These quick answers are pre-written tips, not live AI. ChatGPT may make mistakes and is not a substitute for professional assessment of injuries.</div>`;
 }
 function coachPrompt(question){
+ const her=profile==='girlfriend';
  return [
- 'You are helping me with my existing personal gym strength plan. Please answer in plain, concise, beginner-friendly language. My goal is strength, not just bodybuilding.',
- 'Profile: 19 years old, 194 cm, 71 kg, beginner, full gym access, 5 gym days weekly. I have difficulty with deadlift technique, so my plan intentionally excludes deadlifts and Romanian deadlifts.',
- 'My actual weekly exercise plan:',
- ...R.map((day,i)=>day.exercises.length?dayNames[i]+': '+day.exercises.map(ex=>ex.name+' '+ex.sets+'x'+target(ex)).join('; '):dayNames[i]+': Rest'),
- 'Suggest replacements that match this plan and explain changes in sets/reps when needed. Prioritize good technique, gradual progression, recovery and safety. Do not assume I can already lift a particular weight.',
- 'My question: '+question
+ her?"I'm asking about my girlfriend's gym program. Please give concise, beginner-friendly advice aligned with her goal.":"Please give concise, beginner-friendly advice aligned with my personal strength-training plan.",
+ her?'Girlfriend: 18 years old, around 160 cm, 59.8 kg, new to gym, wants a defined-looking waist and glutes/legs and better cardiovascular fitness. Focus on sustainable body recomposition instead of aggressive weight loss. She does not want direct shoulder isolation exercises.':'My profile: 19 years old, 194 cm, 71 kg, beginner, full gym access; goal strength, 5 training days a week, no deadlifts or Romanian deadlifts because of technique difficulty.',
+ 'Selected weekly program:',
+ ...R.map((day,i)=>day.exercises.length?dayNames[i]+': '+day.exercises.map(ex=>ex.name+' '+ex.sets+'x'+target(ex)+(ex.unit==='kg'?' reps':' '+ex.unit)).join('; '):dayNames[i]+': Rest'),
+ her?'Avoid claims that ab exercises can selectively reduce belly fat. Respect the preference for no shoulder isolation.':'Emphasize safe technique and gradual weight progression.',
+ 'You do not have access to private IronLog workout logs or measurements beyond the profile above.',
+ 'Question: '+question
  ].join('\n');
 }
-function moreView(){return `<span class="eyebrow">Your training setup</span><h1 style="margin-top:10px">Your guide.</h1><p class="top-muted">Everything you need to run your program and keep your progress safe.</p>
- <div class="settings-card"><h3>Your starting profile</h3><div class="stats" style="margin-bottom:0"><div class="stat"><strong>19</strong><span>Years old</span></div><div class="stat"><strong>194</strong><span>Height · cm</span></div><div class="stat"><strong>71</strong><span>Starting kg</span></div></div><p style="margin:14px 0 0">Goal: <b style="color:var(--text)">strength</b>. Plan: <b style="color:var(--text)">5 days per week</b>, with Wednesday intentionally lighter.</p></div>
- <div class="settings-card"><h3>Nutrition & recovery</h3><div class="plan-line"><span>Protein</span><span>115–145 g/day</span></div><div class="plan-line"><span>Calorie surplus</span><span>+250–350/day*</span></div><div class="plan-line"><span>Gradual gain</span><span>0.2–0.4 kg/week</span></div><div class="plan-line"><span>Sleep</span><span>8–9 hours</span></div><p style="margin:10px 0 0">*Estimate above your maintenance calories. Adjust according to your actual weight trend.</p></div>
- <div class="settings-card"><h3>Progression rules</h3><p>In the first 2 weeks, practice form with 2–3 reps left in reserve. When you comfortably finish all sets and reps, increase upper-body barbell lifts by approximately 1–2.5 kg and lower-body lifts by 2.5–5 kg. Machine increments vary. Stop or modify painful movements and ask a qualified trainer for form help.</p></div>
- <div class="settings-card"><h3>Exercise technique & videos</h3><p>Each exercise has a quick 3-step guide and common technique mistake under <b style="color:var(--text)">Form tips</b>. The <b style="color:var(--text)">Video demos</b> link opens YouTube search results for that exercise. The tips work offline; videos need internet. Demonstrations are not independently vetted. Learn new barbell lifts with a qualified trainer when possible.</p></div>
- <div class="settings-card"><h3>Keep a backup of your logs</h3><p>Your logs are saved on this device in this browser, not synced to an account. Export periodically so you don't lose progress if you clear browser data or change phones.</p><div class="button-row"><button class="primary-btn" data-action="export">↓ Export backup</button><button class="secondary-btn" data-action="import">↑ Import backup</button></div></div>
- <div class="settings-card"><h3>Add IronLog to your home screen</h3><p>This app can work offline after it is opened once from its HTTPS web address.</p><ol class="steps"><li><b>iPhone:</b> Open the hosted app link in Safari, tap <b>Share</b>, then <b>Add to Home Screen</b> → <b>Add</b>.</li><li><b>Android:</b> Open the hosted app in Chrome, tap the menu (⋮), then <b>Install app</b> or <b>Add to Home screen</b>.</li></ol><p>For full home-screen installation, upload the included app folder to a static HTTPS host first. A locally opened HTML file may not support installation or reliable saving on iPhone.</p></div>
- <div class="settings-card"><h3>Reset progress</h3><p>This permanently clears workout logs and notes on this device. Export a backup first if you want to keep them.</p><button class="secondary-btn danger" data-action="reset">Clear all workout history</button></div>`;}
-function render(){if(view==='today')main.innerHTML=todayView();else if(view==='plan')main.innerHTML=planView();else if(view==='progress')main.innerHTML=progressView();else if(view==='coach')main.innerHTML=coachView();else main.innerHTML=moreView();renderNav();}
+function moreView(){
+ const her=profile==='girlfriend';
+ const age=her?'18':'19', height=her?'160':'194', weight=her?'59.8':'71';
+ const goal=her?'Body recomposition, glutes, core and fitness':'Strength';
+ const nutrition=her?'<div class="plan-line"><span>Protein guide</span><span>~75–95 g/day</span></div><div class="plan-line"><span>Nutrition focus</span><span>Balanced meals</span></div><div class="plan-line"><span>Activity</span><span>Build fitness gradually</span></div><p>No extreme dieting: progress is about strength, fitness and feeling well, not just the scale.</p>':'<div class="plan-line"><span>Protein</span><span>115–145 g/day</span></div><div class="plan-line"><span>Calorie surplus</span><span>+250–350/day*</span></div><div class="plan-line"><span>Gradual gain</span><span>0.2–0.4 kg/week</span></div><div class="plan-line"><span>Sleep</span><span>8–9 hours</span></div><p>*Adjust your calories to your weight trend and goals.</p>';
+ return `<span class="eyebrow">Training setup · ${her?'Girlfriend':'My profile'}</span><h1 style="margin-top:10px">Your guide.</h1><p class="top-muted">Your settings and backup controls apply to the selected profile only.</p>
+ <div class="settings-card"><h3>${her?"Girlfriend's starting profile":"Your starting profile"}</h3><div class="stats"><div class="stat"><strong>${age}</strong><span>Years old</span></div><div class="stat"><strong>${height}</strong><span>Height · cm</span></div><div class="stat"><strong>${weight}</strong><span>Starting kg</span></div></div><p>Goal: <b style="color:var(--text)">${goal}</b>. Plan: <b style="color:var(--text)">5 training days</b>, with Friday and Saturday rest.</p></div>
+ <div class="settings-card"><h3>Nutrition & recovery</h3>${nutrition}</div>
+ <div class="settings-card"><h3>Progression rules</h3><p>${her?'Start with 1–2 working sets per exercise if needed and increase gradually toward the plan. Focus on technique, comfortable cardio and consistency.':'Practice form with around 2–3 reps in reserve. Increase loads gradually after clean sets and target reps.'} Stop painful movements and seek qualified assessment for persistent pain.</p></div>
+ <div class="settings-card"><h3>Exercise technique & videos</h3><p>Tap <b>Form tips</b> on an exercise for step-by-step cues, or use <b>Video demos</b> to find exercise tutorials online. Video search results have not been independently vetted.</p></div>
+ <div class="settings-card"><h3>Keep a backup of your logs</h3><p>Workouts and notes are stored separately for each profile on this device. Export both profiles individually if you want to keep both sets of logs. Data does not automatically sync between devices.</p><div class="button-row"><button class="primary-btn" data-action="export">↓ Export ${her?'girlfriend':'my'} backup</button><button class="secondary-btn" data-action="import">↑ Import backup</button></div></div>
+ <div class="settings-card"><h3>Add IronLog to your home screen</h3><p>Open IronLog in Safari on iPhone, tap Share, then Add to Home Screen. Open the installed app while online to receive new updates.</p></div>
+ <div class="settings-card"><h3>Reset progress</h3><p>This only resets the <b>${her?'Girlfriend':'My profile'}</b> workout data. It does not touch the other profile. Export a backup first.</p><button class="secondary-btn danger" data-action="reset">Clear selected profile history</button></div>`;
+}
+function render(){if(view==='today')main.innerHTML=todayView();else if(view==='plan')main.innerHTML=planView();else if(view==='progress')main.innerHTML=progressView();else if(view==='coach')main.innerHTML=coachView();else main.innerHTML=moreView();renderNav();renderProfileSwitch();}
 function scrollTop(){window.scrollTo({top:0,behavior:'instant'});}
 function beginRest(ex){if(!ex||!ex.rest)return;timerName=ex.name;timerUntil=Date.now()+ex.rest*1000;updateTimer();flash('Rest started: '+restText(ex.rest));}
 function updateTimer(){const remaining=Math.max(0,Math.ceil((timerUntil-Date.now())/1000));if(!remaining){if(timerUntil){timerUntil=0;timerDock.classList.remove('visible');try{navigator.vibrate?.(80)}catch{}}return;}timerDock.classList.add('visible');timerText.textContent=Math.floor(remaining/60)+':'+pad(remaining%60);timerDock.querySelector('span').textContent='REST · '+timerName;}
@@ -473,6 +574,7 @@ document.body.addEventListener('click',event=>{
    navigator.clipboard.writeText(coachPrompt(q)).then(()=>flash('Question + workout copied!')).catch(()=>flash('Copy failed. Try opening ChatGPT instead.'));
    return;
   }
+  if(a==='profile'){chooseProfile(v);return;}
   if(a==='nav'){view=v;render();scrollTop();return;}
  if(a==='day'){selectedDay=Number(v);view='today';render();return;}
  if(a==='week'){weekOffset+=Number(v);render();return;}
@@ -487,10 +589,10 @@ document.body.addEventListener('click',event=>{
   render();return;
  }
  if(a==='export'){
-  const payload={app:'IronLog',version:1,exportedAt:new Date().toISOString(),data};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='ironlog-backup-'+iso(new Date())+'.json';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);flash('Backup file created');return;
+  const payload={app:'IronLog',version:2,profile,exportedAt:new Date().toISOString(),data};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='ironlog-'+profile+'-backup-'+iso(new Date())+'.json';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);flash('Backup file created');return;
  }
  if(a==='import'){document.getElementById('importFile').click();return;}
- if(a==='reset'){if(confirm('Delete all local workout logs and notes? This cannot be undone.')){data={sessions:{},notes:{}};save();render();flash('Workout history cleared.');}return;}
+ if(a==='reset'){if(confirm('Delete workout history for '+(profile==='girlfriend'?'girlfriend':'my profile')+' ONLY? This cannot be undone.')){data={sessions:{},notes:{}};save();render();flash('Workout history cleared.');}return;}
 });
 document.body.addEventListener('input',event=>{
  const t=event.target;if(t.id==='coachQuestion'){coachDraft=t.value;return;}if(!t.dataset.field)return;
@@ -504,7 +606,7 @@ document.body.addEventListener('change',event=>{if(event.target.id==='chartLift'
 document.getElementById('importFile').addEventListener('change',async event=>{
  const f=event.target.files?.[0];if(!f)return;
  if(f.size>2000000){flash('Backup is too large.');event.target.value='';return;}
- try {const raw=JSON.parse(await f.text());const imported=raw?.data;if(raw?.app!=='IronLog'||!imported||typeof imported.sessions!=='object'||!imported.sessions||Array.isArray(imported.sessions))throw Error('Not an IronLog backup');if(!confirm('Replace current workout logs with the backup? Export current logs first if needed.'))return;data={sessions:imported.sessions,notes:imported.notes&&typeof imported.notes==='object'&&!Array.isArray(imported.notes)?imported.notes:{}};save();render();flash('Backup imported successfully');}catch(err){alert('Unable to import: '+err.message);}finally{event.target.value='';}
+ try {const raw=JSON.parse(await f.text());const imported=raw?.data;if(raw?.app!=='IronLog'||!imported||typeof imported.sessions!=='object'||!imported.sessions||Array.isArray(imported.sessions))throw Error('Not an IronLog backup');const backupProfile=raw.profile==='girlfriend'?'girlfriend':'me';if(backupProfile!==profile)throw Error('Backup belongs to '+(backupProfile==='girlfriend'?'girlfriend':'my profile')+'. Switch to that profile before importing.');if(!confirm('Replace '+(profile==='girlfriend'?'girlfriend':'my')+' workout logs with this backup? Export current logs first if needed.'))return;data={sessions:imported.sessions,notes:imported.notes&&typeof imported.notes==='object'&&!Array.isArray(imported.notes)?imported.notes:{}};save();render();flash('Backup imported successfully');}catch(err){alert('Unable to import: '+err.message);}finally{event.target.value='';}
 });
 if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostname==='localhost'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 render();
