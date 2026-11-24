@@ -181,16 +181,58 @@
   .profile-choice{background:transparent;border:1px solid transparent;border-radius:11px;min-height:44px;color:#a5b5c0;font-size:13px;font-weight:800;}
   .profile-choice.active{background:var(--accent);color:#192c18;border-color:#cbffa0;}
   .profile-info{font-size:11px;line-height:1.5;text-align:center;color:var(--muted);margin:-7px 0 17px;}
+
+  /* Goda's profile: pink accents and dark plum surfaces; Modestas stays original green. */
+  body.goda-theme{
+   --bg:#120e18;--surface:#221827;--surface2:#2b1d32;--border:#50374d;
+   --text:#fff1f8;--muted:#c3a8bc;--accent:#ff9dce;--accentDark:#45223c;
+   --blue:#d9b0ff;--amber:#ffe0a2;--red:#ff9cad;
+  }
+  body.goda-theme::before{background:radial-gradient(ellipse at 17% -20%,rgba(255,133,200,.15),transparent 49%);}
+  body.goda-theme .profile-switch{background:#25182b;border-color:#64435b;}
+  body.goda-theme .profile-choice:not(.active){color:#d3aec9;}
+  body.goda-theme .profile-choice.active{background:var(--accent);color:#392036;border-color:#ffbce0;}
+  body.goda-theme .mark{color:#3b2332;}
+  body.goda-theme .tiny-tag{border-color:#79465f;background:rgba(255,157,206,.09);}
+  body.goda-theme .hero{background:linear-gradient(133deg,#522b4b 0%,#38213d 48%,#292239 100%);border-color:#7b496a;}
+  body.goda-theme .hero::after{border-color:rgba(255,157,206,.15);}
+  body.goda-theme .hero p{color:#f6d9e8;}
+  body.goda-theme .hero-stat span{color:#ebc2dc;}
+  body.goda-theme .ring{background:conic-gradient(var(--accent) var(--progress),rgba(255,157,206,.2) 0);}
+  body.goda-theme .ring::before{background:#38223d;}
+  body.goda-theme .day-btn.active,body.goda-theme .set-check.done{color:#3e1f33;}
+  body.goda-theme .day-btn.active b,body.goda-theme .day-btn.active .dot.completed{color:#3e1f33;background-color:#3e1f33;}
+  body.goda-theme .exercise-index{background:#432b3c;}
+  body.goda-theme .new-tag{background:#4a2b40;}
+  body.goda-theme .pill.green{border-color:#7a4d69;background:#40273b;}
+  body.goda-theme .primary-btn{color:#3b2332;}
+  body.goda-theme .bottom-nav{background:rgba(26,17,33,.96);border-top-color:#62455f;}
+  body.goda-theme .nav-btn{color:#bfa4bc;}
+  body.goda-theme .nav-btn.active{color:var(--accent);background:rgba(255,157,206,.1);}
+  body.goda-theme .timer-dock{background:var(--accent);color:#352039;}
+  body.goda-theme .timer-dock button{background:#4d2c44;color:#ffe7f2;}
+  body.goda-theme .toast{background:#ffe6f2;color:#402338;}
+  body.goda-theme .note{background:#312136;}
+  body.goda-theme .form-toggle,body.goda-theme .coach-exercise{background:#452a40;border-color:#855276;color:#ffd3e8;}
+  body.goda-theme .form-toggle:hover,body.goda-theme .form-toggle[aria-expanded="true"]{background:#5a3450;}
+  body.goda-theme .coach-hero{background:linear-gradient(135deg,#532b50,#32213f 67%,#2b233e);border-color:#855472;}
+  body.goda-theme .coach-hero::after{color:rgba(255,157,206,.19);}
+  body.goda-theme .coach-chip{background:#33233a;border-color:#6e4961;color:#ffe3f0;}
+  body.goda-theme .coach-faq{background:var(--surface);}
+  body.goda-theme .exercise-bottom{border-top-color:#493449;}
+  body.goda-theme .plan-entry{border-top-color:#473347;}
+  body.goda-theme .progress-track{background:#493047;}
+
   @media(min-width:650px) { .wrap { padding-left:26px; padding-right:26px; } .hero { padding:31px; } .exercise-card { padding:21px; } .set-head,.set-row { grid-template-columns:54px 1fr 1fr 54px; } }
   @media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none!important; scroll-behavior:auto!important; } }
 </style>
 </head>
 <body>
   <div class="wrap">
-    <header class="brand"><div class="brand-mark"><div class="mark">I</div><span>IRONLOG<span style="color:var(--accent)">.</span></span></div><span class="tiny-tag">5 DAY PLAN · v2.6</span></header>
+    <header class="brand"><div class="brand-mark"><div class="mark">I</div><span>IRONLOG<span style="color:var(--accent)">.</span></span></div><span class="tiny-tag">5 DAY PLAN · v2.7</span></header>
     <div id="profileSwitch" class="profile-switch" role="group" aria-label="Select workout profile">
-      <button type="button" data-action="profile" data-value="me" class="profile-choice" aria-pressed="true">👤 My profile</button>
-      <button type="button" data-action="profile" data-value="girlfriend" class="profile-choice" aria-pressed="false">♡ Girlfriend</button>
+      <button type="button" data-action="profile" data-value="me" class="profile-choice" aria-pressed="true">👤 Modestas</button>
+      <button type="button" data-action="profile" data-value="girlfriend" class="profile-choice" aria-pressed="false">♡ Goda</button>
     </div>
     <p class="profile-info" id="profileInfo">Each profile has separate workouts, logs and progress.</p>
     <main id="main" aria-live="polite"></main>
@@ -398,7 +440,10 @@ function renderProfileSwitch(){
   b.setAttribute('aria-pressed',String(active));
  });
  const status=document.getElementById('profileInfo');
- if(status)status.textContent=profile==='girlfriend'?'Girlfriend profile · Glutes, fitness & body recomposition · Private to this device':'My profile · Strength training · Private to this device';
+ if(status)status.textContent=profile==='girlfriend'?'Goda · Glutes, fitness & body recomposition · Private to this device':'Modestas · Strength training · Private to this device';
+ document.body.classList.toggle('goda-theme',profile==='girlfriend');
+ const themeMeta=document.querySelector('meta[name="theme-color"]');
+ if(themeMeta)themeMeta.setAttribute('content',profile==='girlfriend'?'#1a1020':'#10151e');
 }
 function chooseProfile(next){
  if(!['me','girlfriend'].includes(next)||next===profile)return;
@@ -413,7 +458,7 @@ function chooseProfile(next){
  coachDraft='';weekOffset=0;selectedDay=(new Date().getDay()+6)%7;
  timerUntil=0;timerDock.classList.remove('visible');
  render();scrollTop();
- flash(profile==='girlfriend'?'Girlfriend profile selected':'My profile selected');
+ flash(profile==='girlfriend'?'Goda selected':'Modestas selected');
 }
 function renderNav(){document.getElementById('nav').innerHTML=[['today','Workout'],['plan','Full Plan'],['coach','AI Coach'],['progress','Progress'],['more','More']].map(([v,label])=>`<button class="nav-btn ${view===v?'active':''}" data-action="nav" data-value="${v}" aria-label="${label}">${navIcon[v]}<span>${label}</span></button>`).join('');}
 function weekAndDays(){
@@ -458,8 +503,8 @@ function chartMarkup(id){const pts=[];
  const pos=(p,i)=>({x:left+(arr.length===1?innerW/2:i*innerW/(arr.length-1)),y:top+innerH-(p.val-minVal)/(maxVal-minVal)*innerH});const p=arr.map(pos);
  const coords=p.map(v=>v.x.toFixed(1)+','+v.y.toFixed(1)).join(' ');
  const grid=[0,.5,1].map(t=>{const y=top+t*innerH,n=Math.round((maxVal-(maxVal-minVal)*t)*10)/10;return `<line x1="${left}" y1="${y}" x2="${width-right}" y2="${y}" stroke="#34424b" stroke-dasharray="4 5"/><text x="${left-5}" y="${y+3}" text-anchor="end" font-size="9" fill="#94a6ad">${n}</text>`;}).join('');
- const line=p.length>=2?`<polyline points="${coords}" fill="none" stroke="#bbfa79" stroke-linejoin="round" stroke-linecap="round" stroke-width="3"/>`:'';
- const dots=p.map((v,i)=>`<circle cx="${v.x}" cy="${v.y}" r="4" fill="#bbfa79" stroke="#213524" stroke-width="2"/><text x="${v.x}" y="${v.y-10}" text-anchor="middle" font-size="9" font-weight="800" fill="#dcebd8">${fmt(arr[i].val)}</text>`).join('');
+ const line=p.length>=2?`<polyline points="${coords}" fill="none" stroke="var(--accent)" stroke-linejoin="round" stroke-linecap="round" stroke-width="3"/>`:'';
+ const dots=p.map((v,i)=>`<circle cx="${v.x}" cy="${v.y}" r="4" fill="var(--accent)" stroke="#213524" stroke-width="2"/><text x="${v.x}" y="${v.y-10}" text-anchor="middle" font-size="9" font-weight="800" fill="#dcebd8">${fmt(arr[i].val)}</text>`).join('');
  const labels=p.map((v,i)=>(i===0||i===p.length-1||p.length<=4)?`<text x="${v.x}" y="${height-9}" text-anchor="middle" font-size="9" fill="#97aab3">${esc(dateShort(new Date(arr[i].date+'T12:00:00')))}</text>`:'').join('');
  return `<svg class="chart" viewBox="0 0 ${width} ${height}" aria-label="Logged maximum working weights over time, kilograms" role="img">${grid}${line}${dots}${labels}</svg><p class="small muted" style="margin-bottom:0">Heaviest completed working set (kg) per logged session. Up to 10 entries.</p>`;
 }
@@ -509,8 +554,8 @@ function coachView(){
   ['Are my traps and forearms trained?','Yes. Sunday includes shrugs. Wednesday has reverse wrist curls, seated wrist curls and hammer curls.'],
   ['How much protein?','Your current starting guide is around 115–145 g protein daily, alongside adequate calories and sleep.']
  ];
- return `<span class="eyebrow">Training help · ${her?'Girlfriend':'My profile'}</span>
-  <div class="coach-hero" style="margin-top:12px"><span class="eyebrow">✦ IRONLOG COACH</span><h1>Got a gym question?</h1><p>Ask ChatGPT with ${her?"your girlfriend's program":"your strength program"} already included, without sending private workout logs.</p></div>
+ return `<span class="eyebrow">Training help · ${her?'Goda':'Modestas'}</span>
+  <div class="coach-hero" style="margin-top:12px"><span class="eyebrow">✦ IRONLOG COACH</span><h1>Got a gym question?</h1><p>Ask ChatGPT with ${her?"Goda’s program":"Modestas’s strength program"} already included, without sending private workout logs.</p></div>
   <div class="coach-card"><label for="coachQuestion">What would you like to ask?</label><textarea id="coachQuestion" class="coach-question" maxlength="700" placeholder="Ask about exercise technique, fitness or progress…">${esc(coachDraft)}</textarea>
   <div class="coach-actions"><button type="button" class="primary-btn" data-action="coach-ask">✦ Ask ChatGPT ↗</button><button type="button" class="secondary-btn" data-action="coach-copy">Copy with program</button></div>
   <p class="coach-smallprint">This free option opens ChatGPT in a separate tab, with the selected profile's program and your question. No API key or paid API needed. If the question does not appear, use Copy with program and paste it into ChatGPT.</p></div>
@@ -523,8 +568,8 @@ function coachView(){
 function coachPrompt(question){
  const her=profile==='girlfriend';
  return [
- her?"I'm asking about my girlfriend's gym program. Please give concise, beginner-friendly advice aligned with her goal.":"Please give concise, beginner-friendly advice aligned with my personal strength-training plan.",
- her?'Girlfriend: 18 years old, around 160 cm, 59.8 kg, new to gym, wants a defined-looking waist and glutes/legs and better cardiovascular fitness. Focus on sustainable body recomposition instead of aggressive weight loss. She does not want direct shoulder isolation exercises.':'My profile: 19 years old, 194 cm, 71 kg, beginner, full gym access; goal strength, 5 training days a week, no deadlifts or Romanian deadlifts because of technique difficulty.',
+ her?"I am asking about Goda’s gym program. Please give concise, beginner-friendly advice aligned with her goals.":"Please give concise, beginner-friendly advice aligned with my personal strength-training plan.",
+ her?'Goda: 18 years old, around 160 cm, 59.8 kg, new to gym, wants a defined-looking waist and glutes/legs and better cardiovascular fitness. Focus on sustainable body recomposition instead of aggressive weight loss. She does not want direct shoulder isolation exercises.':'Modestas: 19 years old, 194 cm, 71 kg, beginner, full gym access; goal strength, 5 training days a week, no deadlifts or Romanian deadlifts because of technique difficulty.',
  'Selected weekly program:',
  ...R.map((day,i)=>day.exercises.length?dayNames[i]+': '+day.exercises.map(ex=>ex.name+' '+ex.sets+'x'+target(ex)+(ex.unit==='kg'?' reps':' '+ex.unit)).join('; '):dayNames[i]+': Rest'),
  her?'Avoid claims that ab exercises can selectively reduce belly fat. Respect the preference for no shoulder isolation.':'Emphasize safe technique and gradual weight progression.',
@@ -537,14 +582,14 @@ function moreView(){
  const age=her?'18':'19', height=her?'160':'194', weight=her?'59.8':'71';
  const goal=her?'Body recomposition, glutes, core and fitness':'Strength';
  const nutrition=her?'<div class="plan-line"><span>Protein guide</span><span>~75–95 g/day</span></div><div class="plan-line"><span>Nutrition focus</span><span>Balanced meals</span></div><div class="plan-line"><span>Activity</span><span>Build fitness gradually</span></div><p>No extreme dieting: progress is about strength, fitness and feeling well, not just the scale.</p>':'<div class="plan-line"><span>Protein</span><span>115–145 g/day</span></div><div class="plan-line"><span>Calorie surplus</span><span>+250–350/day*</span></div><div class="plan-line"><span>Gradual gain</span><span>0.2–0.4 kg/week</span></div><div class="plan-line"><span>Sleep</span><span>8–9 hours</span></div><p>*Adjust your calories to your weight trend and goals.</p>';
- return `<span class="eyebrow">Training setup · ${her?'Girlfriend':'My profile'}</span><h1 style="margin-top:10px">Your guide.</h1><p class="top-muted">Your settings and backup controls apply to the selected profile only.</p>
- <div class="settings-card"><h3>${her?"Girlfriend's starting profile":"Your starting profile"}</h3><div class="stats"><div class="stat"><strong>${age}</strong><span>Years old</span></div><div class="stat"><strong>${height}</strong><span>Height · cm</span></div><div class="stat"><strong>${weight}</strong><span>Starting kg</span></div></div><p>Goal: <b style="color:var(--text)">${goal}</b>. Plan: <b style="color:var(--text)">5 training days</b>, with Friday and Saturday rest.</p></div>
+ return `<span class="eyebrow">Training setup · ${her?'Goda':'Modestas'}</span><h1 style="margin-top:10px">Your guide.</h1><p class="top-muted">Your settings and backup controls apply to the selected profile only.</p>
+ <div class="settings-card"><h3>${her?"Goda’s starting profile":"Modestas’s starting profile"}</h3><div class="stats"><div class="stat"><strong>${age}</strong><span>Years old</span></div><div class="stat"><strong>${height}</strong><span>Height · cm</span></div><div class="stat"><strong>${weight}</strong><span>Starting kg</span></div></div><p>Goal: <b style="color:var(--text)">${goal}</b>. Plan: <b style="color:var(--text)">5 training days</b>, with Friday and Saturday rest.</p></div>
  <div class="settings-card"><h3>Nutrition & recovery</h3>${nutrition}</div>
  <div class="settings-card"><h3>Progression rules</h3><p>${her?'Start with 1–2 working sets per exercise if needed and increase gradually toward the plan. Focus on technique, comfortable cardio and consistency.':'Practice form with around 2–3 reps in reserve. Increase loads gradually after clean sets and target reps.'} Stop painful movements and seek qualified assessment for persistent pain.</p></div>
  <div class="settings-card"><h3>Exercise technique & videos</h3><p>Tap <b>Form tips</b> on an exercise for step-by-step cues, or use <b>Video demos</b> to find exercise tutorials online. Video search results have not been independently vetted.</p></div>
- <div class="settings-card"><h3>Keep a backup of your logs</h3><p>Workouts and notes are stored separately for each profile on this device. Export both profiles individually if you want to keep both sets of logs. Data does not automatically sync between devices.</p><div class="button-row"><button class="primary-btn" data-action="export">↓ Export ${her?'girlfriend':'my'} backup</button><button class="secondary-btn" data-action="import">↑ Import backup</button></div></div>
+ <div class="settings-card"><h3>Keep a backup of your logs</h3><p>Workouts and notes are stored separately for each profile on this device. Export both profiles individually if you want to keep both sets of logs. Data does not automatically sync between devices.</p><div class="button-row"><button class="primary-btn" data-action="export">↓ Export ${her?'Goda':'Modestas'} backup</button><button class="secondary-btn" data-action="import">↑ Import backup</button></div></div>
  <div class="settings-card"><h3>Add IronLog to your home screen</h3><p>Open IronLog in Safari on iPhone, tap Share, then Add to Home Screen. Open the installed app while online to receive new updates.</p></div>
- <div class="settings-card"><h3>Reset progress</h3><p>This only resets the <b>${her?'Girlfriend':'My profile'}</b> workout data. It does not touch the other profile. Export a backup first.</p><button class="secondary-btn danger" data-action="reset">Clear selected profile history</button></div>`;
+ <div class="settings-card"><h3>Reset progress</h3><p>This only resets <b>${her?'Goda’s':'Modestas’s'}</b> workout data. It does not touch the other profile. Export a backup first.</p><button class="secondary-btn danger" data-action="reset">Clear selected profile history</button></div>`;
 }
 function render(){if(view==='today')main.innerHTML=todayView();else if(view==='plan')main.innerHTML=planView();else if(view==='progress')main.innerHTML=progressView();else if(view==='coach')main.innerHTML=coachView();else main.innerHTML=moreView();renderNav();renderProfileSwitch();}
 function scrollTop(){window.scrollTo({top:0,behavior:'instant'});}
@@ -589,10 +634,10 @@ document.body.addEventListener('click',event=>{
   render();return;
  }
  if(a==='export'){
-  const payload={app:'IronLog',version:2,profile,exportedAt:new Date().toISOString(),data};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='ironlog-'+profile+'-backup-'+iso(new Date())+'.json';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);flash('Backup file created');return;
+  const payload={app:'IronLog',version:2,profile,exportedAt:new Date().toISOString(),data};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='ironlog-'+(profile==='girlfriend'?'goda':'modestas')+'-backup-'+iso(new Date())+'.json';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);flash('Backup file created');return;
  }
  if(a==='import'){document.getElementById('importFile').click();return;}
- if(a==='reset'){if(confirm('Delete workout history for '+(profile==='girlfriend'?'girlfriend':'my profile')+' ONLY? This cannot be undone.')){data={sessions:{},notes:{}};save();render();flash('Workout history cleared.');}return;}
+ if(a==='reset'){if(confirm('Delete workout history for '+(profile==='girlfriend'?'Goda':'Modestas')+' ONLY? This cannot be undone.')){data={sessions:{},notes:{}};save();render();flash('Workout history cleared.');}return;}
 });
 document.body.addEventListener('input',event=>{
  const t=event.target;if(t.id==='coachQuestion'){coachDraft=t.value;return;}if(!t.dataset.field)return;
@@ -606,7 +651,7 @@ document.body.addEventListener('change',event=>{if(event.target.id==='chartLift'
 document.getElementById('importFile').addEventListener('change',async event=>{
  const f=event.target.files?.[0];if(!f)return;
  if(f.size>2000000){flash('Backup is too large.');event.target.value='';return;}
- try {const raw=JSON.parse(await f.text());const imported=raw?.data;if(raw?.app!=='IronLog'||!imported||typeof imported.sessions!=='object'||!imported.sessions||Array.isArray(imported.sessions))throw Error('Not an IronLog backup');const backupProfile=raw.profile==='girlfriend'?'girlfriend':'me';if(backupProfile!==profile)throw Error('Backup belongs to '+(backupProfile==='girlfriend'?'girlfriend':'my profile')+'. Switch to that profile before importing.');if(!confirm('Replace '+(profile==='girlfriend'?'girlfriend':'my')+' workout logs with this backup? Export current logs first if needed.'))return;data={sessions:imported.sessions,notes:imported.notes&&typeof imported.notes==='object'&&!Array.isArray(imported.notes)?imported.notes:{}};save();render();flash('Backup imported successfully');}catch(err){alert('Unable to import: '+err.message);}finally{event.target.value='';}
+ try {const raw=JSON.parse(await f.text());const imported=raw?.data;if(raw?.app!=='IronLog'||!imported||typeof imported.sessions!=='object'||!imported.sessions||Array.isArray(imported.sessions))throw Error('Not an IronLog backup');const backupProfile=raw.profile==='girlfriend'?'girlfriend':'me';if(backupProfile!==profile)throw Error('Backup belongs to '+(backupProfile==='girlfriend'?'Goda':'Modestas')+'. Switch to that profile before importing.');if(!confirm('Replace '+(profile==='girlfriend'?'Goda’s':'Modestas’s')+' workout logs with this backup? Export current logs first if needed.'))return;data={sessions:imported.sessions,notes:imported.notes&&typeof imported.notes==='object'&&!Array.isArray(imported.notes)?imported.notes:{}};save();render();flash('Backup imported successfully');}catch(err){alert('Unable to import: '+err.message);}finally{event.target.value='';}
 });
 if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostname==='localhost'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 render();
