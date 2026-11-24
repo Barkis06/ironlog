@@ -4,17 +4,17 @@ WHAT'S INCLUDED
 - index.html: the complete app (no external libraries or accounts required)
 - manifest.webmanifest: installs as a home-screen web app
 - sw.js: offline caching once hosted and opened online
-- icons/: app icons for iPhone and Android
-- Technique guides: short offline cues for all 28 scheduled exercises
+- icon-192.png and icon-512.png: app icons for iPhone and Android
+- Technique guides: short offline cues for all scheduled exercises
 - Video demos: YouTube search links for each exercise (requires internet)
 
 YOUR WORKOUT PROGRAM
 Monday: Lower Body A (squats)
 Tuesday: Upper Body A (bench press)
-Wednesday: Light recovery, core and reverse wrist curls
+Wednesday: Light forearms, wrists and abs (no scheduled cardio)
 Thursday: Lower Body B (hack squats)
-Friday: Upper Body B (overhead press, dumbbell shrugs)
-Saturday and Sunday: Rest
+Friday and Saturday: Rest
+Sunday: Upper Body B (overhead press, dumbbell shrugs)
 No deadlifts or Romanian deadlifts.
 
 HOW TO INSTALL ON AN IPHONE (RECOMMENDED)

@@ -183,7 +183,7 @@
 </head>
 <body>
   <div class="wrap">
-    <header class="brand"><div class="brand-mark"><div class="mark">I</div><span>IRONLOG<span style="color:var(--accent)">.</span></span></div><span class="tiny-tag">STRENGTH / 5 DAYS · v2.4</span></header>
+    <header class="brand"><div class="brand-mark"><div class="mark">I</div><span>IRONLOG<span style="color:var(--accent)">.</span></span></div><span class="tiny-tag">STRENGTH / 5 DAYS · v2.5</span></header>
     <main id="main" aria-live="polite"></main>
     <footer class="footer">Made for your training. Your logs stay on this device.</footer>
   </div>
@@ -212,12 +212,14 @@ const R = [
   e('latPulldown','Lat Pulldown',3,10,10,90,'kg',2.5,'Avoid leaning back excessively.'),
   e('triPush','Triceps Pushdown',2,12,12,60,'kg',2.5,'Keep elbows close to your sides.')
  ]},
- {name:'Light Day + Core', focus:'Recovery and forearms', duration:'35–45 min', exercises:[
-  e('cardio','Walking or Cycling',1,15,20,0,'min',0,'Easy conversational pace.'),
-  e('facePull','Cable Face Pull',2,15,15,60,'kg',2.5,'Pull toward upper face, elbows high.'),
+ {name:'Forearms, Wrists + Abs', focus:'Light accessory work for grip, wrists and core', duration:'40–50 min', exercises:[
+  e('facePull','Cable Face Pull',2,15,15,60,'kg',2.5,'Keep the rope level with your face; no swinging.'),
   e('curlWed','Dumbbell Biceps Curl',2,12,12,60,'kg',1,'Log weight per dumbbell.'),
-  e('wrist','Reverse Wrist Curl',2,12,15,60,'kg',1,'NEW · Light weight; palms down; control each rep.'),
-  e('plank','Plank',3,30,45,60,'sec',0,'Keep body straight; avoid holding breath.'),
+  e('hammer','Dumbbell Hammer Curl',2,10,12,60,'kg',1,'Light, controlled reps; neutral grip for brachioradialis and forearms.'),
+  e('wrist','Reverse Wrist Curl',2,12,15,60,'kg',1,'Light weight; palms down; control each rep.'),
+  e('wristFlex','Seated Dumbbell Wrist Curl',2,12,15,60,'kg',0.5,'Light weight; palms up; move only at the wrists.'),
+  e('reverseCrunch','Reverse Crunch',2,10,15,60,'reps',0,'Slowly tilt your pelvis; avoid swinging your legs.'),
+  e('plank','Plank',3,30,45,60,'sec',0,'Keep your body straight; breathe normally.'),
   e('mobility','Mobility Exercises',1,5,10,0,'min',0,'Gentle hip and shoulder mobility.')
  ]},
  {name:'Lower Body B', focus:'Leg strength', duration:'50–60 min', exercises:[
@@ -227,6 +229,8 @@ const R = [
   e('hip2','Hip Thrust Machine',2,10,10,120,'kg',5,'Smooth controlled reps.'),
   e('calf2','Seated Calf Raise',2,12,12,60,'kg',2.5,'Pause briefly at the top.')
  ]},
+ {name:'Rest & Recover',focus:'Full rest',duration:'—',exercises:[]},
+ {name:'Rest & Recover',focus:'Full rest',duration:'—',exercises:[]},
  {name:'Upper Body B', focus:'Shoulders, back and traps', duration:'60–70 min', exercises:[
   e('ohp','Barbell Overhead Press',3,5,5,180,'kg',2.5,'Squeeze glutes and avoid leaning back.'),
   e('incline','Incline Dumbbell Bench Press',3,8,8,120,'kg',1,'Log weight per dumbbell.'),
@@ -236,8 +240,6 @@ const R = [
   e('curlFri','Dumbbell Biceps Curl',2,10,10,60,'kg',1,'Log weight per dumbbell.'),
   e('shrugs','Dumbbell Shrugs',2,10,15,90,'kg',1,'NEW · Lift shoulders upward, not in circles.')
  ]},
- {name:'Rest & Recover',focus:'Full rest',duration:'—',exercises:[]},
- {name:'Rest & Recover',focus:'Full rest',duration:'—',exercises:[]}
 ];
 function e(id,name,sets,min,max,rest,unit,step,note) {return {id,name,sets,min,max,rest,unit,step,note};}
 const FORM_GUIDES = {
@@ -252,6 +254,9 @@ const FORM_GUIDES = {
  latPulldown:{muscles:'Lats · upper back · biceps',steps:['Adjust the thigh pad, grip the bar, and sit tall.','Pull elbows down toward your ribs as the bar approaches your upper chest.','Return the bar smoothly until your arms are extended.'],avoid:'Avoid excessive backward leaning or pulling behind your neck.'},
  triPush:{muscles:'Triceps',steps:['Stand steady with elbows tucked near your sides and hold the cable attachment.','Extend your elbows to push the handle downward.','Slowly return until your forearms are near a right angle or a comfortable bend.'],avoid:'Keep shoulders still; avoid swinging your body.'},
  cardio:{muscles:'Heart · recovery',steps:['Choose a treadmill walk or easy stationary bike pace.','Keep the intensity easy enough to talk in full sentences.','Continue for 15–20 minutes and finish feeling refreshed.'],avoid:'This is a light day; do not turn it into a hard interval session.'},
+ hammer:{muscles:'Brachioradialis · forearms · biceps',steps:['Stand tall holding light dumbbells at your sides, palms facing inward.','Keeping elbows near your sides, bend your elbows to raise the dumbbells.','Lower slowly without turning your palms or leaning back.'],avoid:'Do not swing weights or twist the wrists; start light and stop for sharp pain.'},
+ wristFlex:{muscles:'Wrist flexors · forearms',steps:['Sit with forearms supported on your thighs or a bench, palms facing upward.','Allow your wrists to lower gently while keeping forearms still.','Curl your palms upward using a very light dumbbell, then lower slowly.'],avoid:'Do not bounce, force the wrist range, or use heavy weights; stop if your wrists hurt.'},
+ reverseCrunch:{muscles:'Abdominals · core',steps:['Lie on your back with knees bent and feet lifted, keeping your lower back comfortable.','Tighten your abs to tip your pelvis and gently raise your hips a little off the floor.','Lower slowly without swinging your legs.'],avoid:'Do not throw your knees toward your chest or pull with momentum.'},
  facePull:{muscles:'Rear shoulders · upper back · traps',steps:['Set the rope at face or forehead height and stand with a stable stance.','Pull the rope toward your face as your elbows move outward.','Squeeze your upper back lightly and return with control.'],avoid:'Keep your ribs down and avoid leaning back to move more weight.'},
  curlWed:{muscles:'Biceps · forearms',steps:['Stand tall with dumbbells by your sides and palms facing forward.','Bend your elbows to raise the weights while your upper arms stay close to your sides.','Lower slowly until your elbows straighten comfortably.'],avoid:'Avoid leaning back or swinging your elbows forward.'},
  wrist:{muscles:'Forearm extensors',steps:['Sit and rest your forearms on your thighs or a bench with palms facing down.','Let your wrists move slightly downward, then lift the backs of your hands toward your forearms.','Use very light weights and lower slowly.'],avoid:'Only move at the wrist. Stop if you feel sharp wrist pain.'},
@@ -270,7 +275,7 @@ const FORM_GUIDES = {
 const GUIDE_ALIASES = {hip2:'hip1',curl2:'curl1',curlFri:'curlWed'};
 function guideFor(ex) {return FORM_GUIDES[GUIDE_ALIASES[ex.id]||ex.id] || {muscles:'Full body',steps:[ex.note],avoid:'Use a comfortable range of motion and controlled technique.'};}
 function videoLink(ex) {
- const phrase = ex.id==='cardio' ? 'easy stationary bike cardio technique gym beginner' : ex.id==='mobility' ? 'beginner hips shoulders mobility gym routine' : ex.name + ' how to exercise proper form tutorial';
+ const phrase = ex.id==='mobility' ? 'beginner hips shoulders mobility gym routine' : ex.name + ' how to exercise proper form tutorial';
  return 'https://www.youtube.com/results?search_query='+encodeURIComponent(phrase);
 }
 function guideHtml(ex,location) {
@@ -349,16 +354,16 @@ function todayView(){
    rows+=`<div class="set-row"><div class="set-num">${i+1}</div><input class="set-input" ${hasWeight?'':'disabled'} aria-label="${esc(ex.name)} set ${i+1} weight in kg" type="number" inputmode="decimal" min="0" step="0.5" placeholder="${hasWeight?'—':'N/A'}" data-field="weight" data-id="${ex.id}" data-set="${i}" data-date="${date}" value="${cur.weight==null?'':esc(cur.weight)}"/><input class="set-input" aria-label="${esc(ex.name)} set ${i+1} ${ex.unit==='kg'?'reps':ex.unit}" type="number" inputmode="numeric" min="0" step="1" placeholder="${ex.min}" data-field="reps" data-id="${ex.id}" data-set="${i}" data-date="${date}" value="${cur.reps==null?'':esc(cur.reps)}"/><button class="set-check ${isDone?'done':''}" aria-label="${esc(ex.name)} set ${i+1} ${isDone?'completed':'mark completed'}" aria-pressed="${isDone}" data-action="complete" data-id="${ex.id}" data-set="${i}" data-day="${selectedDay}" data-date="${date}">${isDone?'✓':'○'}</button></div>`;
   }
   const sug=suggestion(ex,date),unit=ex.unit==='kg'?'REPS':ex.unit.toUpperCase();
-  html+=`<section class="exercise-card"><div class="exercise-top"><span class="exercise-index">${pad(n+1)}</span><div class="exercise-name"><h3>${esc(ex.name)}${ex.id==='wrist'||ex.id==='shrugs'?'<span class="new-tag">ADDED</span>':''}</h3><p>${ex.sets} ${ex.sets===1?'set':'sets'} × ${target(ex)} ${ex.unit==='kg'?'reps':ex.unit} · ${restText(ex.rest)}</p></div>${ex.rest?`<button class="rest-button" data-action="rest" data-id="${ex.id}" data-day="${selectedDay}">⏱ Rest</button>`:''}</div><div class="set-head"><span>SET</span><span>KG</span><span>${unit}</span><span>DONE</span></div>${rows}<div class="exercise-bottom"><span>${esc(ex.note)}</span>${sug?`<strong>${esc(sug)}</strong>`:''}</div>${guideHtml(ex,'workout')}</section>`;
+  html+=`<section class="exercise-card"><div class="exercise-top"><span class="exercise-index">${pad(n+1)}</span><div class="exercise-name"><h3>${esc(ex.name)}${['wrist','shrugs','hammer','wristFlex','reverseCrunch'].includes(ex.id)?'<span class="new-tag">ADDED</span>':''}</h3><p>${ex.sets} ${ex.sets===1?'set':'sets'} × ${target(ex)} ${ex.unit==='kg'?'reps':ex.unit} · ${restText(ex.rest)}</p></div>${ex.rest?`<button class="rest-button" data-action="rest" data-id="${ex.id}" data-day="${selectedDay}">⏱ Rest</button>`:''}</div><div class="set-head"><span>SET</span><span>KG</span><span>${unit}</span><span>DONE</span></div>${rows}<div class="exercise-bottom"><span>${esc(ex.note)}</span>${sug?`<strong>${esc(sug)}</strong>`:''}</div>${guideHtml(ex,'workout')}</section>`;
  });
  html+=`<div class="note"><b>How to log:</b> Enter your weight and reps, then tap ○ to finish each set. If reps are blank when you check a set, the prescribed minimum is used. For dumbbells, log the weight of one dumbbell. The next workout uses your previous logs to suggest a weight.</div>`;
  html+=`<div class="section-row"><h2>Workout notes</h2><span class="muted small">Optional</span></div><textarea class="textarea" data-field="notes" data-date="${date}" placeholder="How did the session feel? Technique tips, energy, etc.">${esc(data.notes[date]||'')}</textarea>`;
  return html;
 }
-function planView(){let html=`<span class="eyebrow">Your training blueprint</span><h1 style="margin-top:10px">The full plan.</h1><p class="top-muted">Four strength-focused sessions, one lighter technique and recovery day. No deadlifts or Romanian deadlifts.</p>`;
+function planView(){let html=`<span class="eyebrow">Your training blueprint</span><h1 style="margin-top:10px">The full plan.</h1><p class="top-muted">Four strength-focused sessions, one lighter forearm, wrist and core day. No deadlifts or Romanian deadlifts.</p>`;
  html+=`<div class="note"><b>Rule:</b> Warm up 5–10 minutes and do lighter ramp-up sets before your first major lift. Start with 2–3 reps in reserve. Increase load only when technique and target reps are solid.</div>`;
  R.forEach((d,i)=>{
-  html+=`<div class="day-plan"><div class="day-plan-top"><div><span class="eyebrow">${dayNames[i]}</span><h3 style="margin-top:5px">${esc(d.name)}</h3></div><button class="${i<5?'secondary-btn':'tiny-btn'}" data-action="open-day" data-value="${i}">${i<5?'Log session':'Rest day'}</button></div><p class="focus">${esc(d.focus)} · ${esc(d.duration)}</p>${d.exercises.length?`<div class="plan-exercises">${d.exercises.map(ex=>`<div class="plan-entry"><div class="plan-entry-head"><span class="plan-entry-name">${esc(ex.name)}</span><span class="plan-entry-reps">${ex.sets} × ${target(ex)} ${ex.unit==='kg'?'reps':ex.unit}</span></div>${guideHtml(ex,'plan')}</div>`).join('')}</div>`:'<div class="plan-line"><span>Recovery, hydration and sleep</span><span>—</span></div>'}</div>`;
+  html+=`<div class="day-plan"><div class="day-plan-top"><div><span class="eyebrow">${dayNames[i]}</span><h3 style="margin-top:5px">${esc(d.name)}</h3></div><button class="${d.exercises.length?'secondary-btn':'tiny-btn'}" data-action="open-day" data-value="${i}">${d.exercises.length?'Log session':'Rest day'}</button></div><p class="focus">${esc(d.focus)} · ${esc(d.duration)}</p>${d.exercises.length?`<div class="plan-exercises">${d.exercises.map(ex=>`<div class="plan-entry"><div class="plan-entry-head"><span class="plan-entry-name">${esc(ex.name)}</span><span class="plan-entry-reps">${ex.sets} × ${target(ex)} ${ex.unit==='kg'?'reps':ex.unit}</span></div>${guideHtml(ex,'plan')}</div>`).join('')}</div>`:'<div class="plan-line"><span>Recovery, hydration and sleep</span><span>—</span></div>'}</div>`;
  });
  return html;
 }
@@ -375,12 +380,21 @@ function chartMarkup(id){const pts=[];
  const labels=p.map((v,i)=>(i===0||i===p.length-1||p.length<=4)?`<text x="${v.x}" y="${height-9}" text-anchor="middle" font-size="9" fill="#97aab3">${esc(dateShort(new Date(arr[i].date+'T12:00:00')))}</text>`:'').join('');
  return `<svg class="chart" viewBox="0 0 ${width} ${height}" aria-label="Logged maximum working weights over time, kilograms" role="img">${grid}${line}${dots}${labels}</svg><p class="small muted" style="margin-bottom:0">Heaviest completed working set (kg) per logged session. Up to 10 entries.</p>`;
 }
+function historicalWorkoutName(date,day){
+ const ids=Object.keys(data.sessions?.[date]||{});
+ if(ids.some(id=>['ohp','incline','shrugs','pullups','chestRow'].includes(id)))return 'Upper Body B';
+ if(ids.some(id=>['squat','legpress','hip1'].includes(id)))return 'Lower Body A';
+ if(ids.some(id=>['bench','latPulldown','triPush'].includes(id)))return 'Upper Body A';
+ if(ids.some(id=>['hack','split','hip2'].includes(id)))return 'Lower Body B';
+ if(ids.includes('cardio'))return 'Light Day + Core (previous plan)';
+ return R[day].name;
+}
 function progressView(){const history=sessionEntries(),sets=history.reduce((a,b)=>a+b.count,0),vol=history.reduce((a,b)=>a+b.vol,0); const lifts=[['squat','Back Squat'],['bench','Bench Press'],['ohp','Overhead Press'],['hack','Hack Squat'],['hip1','Hip Thrust Machine'],['shrugs','Dumbbell Shrugs'],['wrist','Reverse Wrist Curls']];
  let html=`<span class="eyebrow">Your hard work, measured</span><h1 style="margin-top:10px">Keep getting stronger.</h1><p class="top-muted">Your data is stored locally in this browser. Every checked-off set counts toward your history.</p><div class="stats"><div class="stat"><strong>${history.length}</strong><span>Sessions logged</span></div><div class="stat"><strong>${sets}</strong><span>Sets finished</span></div><div class="stat"><strong>${vol>=1000?(vol/1000).toFixed(1)+'k':Math.round(vol)}</strong><span>Approx. kg × reps</span></div></div>`;
  html+=`<div class="section-row"><h2>Weight progress</h2></div><div class="chart-card"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px"><b style="font-size:13px">Top working weight</b><select id="chartLift" aria-label="Choose exercise for progress chart">${lifts.map(([id,name])=>`<option value="${id}" ${chartLift===id?'selected':''}>${esc(name)}</option>`).join('')}</select></div>${chartMarkup(chartLift)}</div>`;
  html+=`<div class="section-row"><h2>Recent workouts</h2><span class="pill">${history.length} total</span></div>`;
  if(!history.length)html+=`<div class="empty"><h3>No workouts logged yet</h3><p>After your first set, your exercise history will appear here.</p><button class="primary-btn" data-action="nav" data-value="today">Start logging</button></div>`;
- else html+=`<div class="settings-card">${history.slice(0,12).map(item=>{const day=(new Date(item.date+'T12:00:00').getDay()+6)%7;return `<div class="history-item"><div><b>${esc(dayNames[day])} · ${esc(R[day].name)}</b><small>${esc(dateLong(new Date(item.date+'T12:00:00')))}</small></div><span class="history-count">${item.count} sets ✓</span></div>`;}).join('')}</div>`;
+ else html+=`<div class="settings-card">${history.slice(0,12).map(item=>{const day=(new Date(item.date+'T12:00:00').getDay()+6)%7;const actualName=historicalWorkoutName(item.date,day);return `<div class="history-item"><div><b>${esc(dayNames[day])} · ${esc(actualName)}</b><small>${esc(dateLong(new Date(item.date+'T12:00:00')))}</small></div><span class="history-count">${item.count} sets ✓</span></div>`;}).join('')}</div>`;
  html+=`<div class="note"><b>Progress tip:</b> After you hit every set at the top of its rep range with good form, add a small amount of weight the next time. For assisted pull-ups, less assistance makes the movement harder.</div>`;
  return html;
 }
@@ -396,7 +410,7 @@ function coachView(){
  const faq=[
   ['When should I increase my weights?','Only increase when you finish every set and rep with controlled technique and about 1–2 good reps to spare. Try small jumps: 1–2.5 kg for upper-body barbell lifts and 2.5–5 kg for lower-body lifts when appropriate.'],
   ['Why does my program have no deadlifts?','You said deadlift technique feels difficult. Squats, hip thrusts, leg curls and rows let you train your legs and back while focusing on easier-to-learn setups. You can learn deadlifts later if you want to.'],
-  ['Am I training traps and forearms?','Yes. Friday includes dumbbell shrugs (upper traps), and Wednesday includes reverse wrist curls (forearm extensors). Rows, pull-ups and face pulls also help your upper back and grip.'],
+  ['Am I training traps and forearms?','Yes. Sunday includes dumbbell shrugs (upper traps). Wednesday has reverse wrist curls (extensors), seated wrist curls (flexors) and hammer curls (brachioradialis and grip).'],
   ['What if an exercise hurts?','Stop the painful movement. Do not force reps through sharp pain. If pain persists or affects daily activities, ask a qualified healthcare professional or physiotherapist to assess it.'],
   ['How much protein should I eat?','Your starting target is around 115–145 g of protein daily. To gain strength and body mass, aim for a modest calorie surplus and monitor your weight trend over a few weeks.'],
   ['Do I need to train to failure?','No. As a beginner, leave roughly 2–3 repetitions in reserve when learning movements. Good form and consistent progressive training matter more than exhausting yourself.']
