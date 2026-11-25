@@ -66,3 +66,10 @@ TWO PROFILES (v2.6)
 Use the My profile / Girlfriend selector above the workout. Each profile has an independent training program, workout notes, progress charts, and backup file. Your existing data stays under the original ironlog_strength_v1 key. Girlfriend sessions start empty under ironlog_girlfriend_v1. Both use Friday and Saturday rest days.
 Girlfriend plan: Monday legs/glutes A; Tuesday chest/back; Wednesday abs/core/cardio; Thursday legs/glutes B; Friday/Saturday rest; Sunday upper body and cardio. No direct shoulder isolation.
 Each profile must be backed up separately through More > Export backup. Older IronLog backups without a profile tag belong to My profile. No automatic sync between phones or installed web apps.
+
+
+SHARED FOUR-DAY PLAN (v2.8)
+Both Modestas and Goda train Monday, Wednesday, Thursday and Sunday. Tuesday, Friday and Saturday are rest days.
+Modestas: Monday Legs (10 working sets, reduced for recovery); Wednesday Upper Body A (no hammer curls); Thursday Biceps, Forearms & Abs; Sunday Upper Body B (no extra direct biceps/forearm lifts). His strength goal remains unchanged.
+Goda: Monday Glutes & Legs A; Wednesday Chest & Back with Dead Bug and a short incline walk; Thursday Glutes & Legs B plus cable crunches; Sunday Upper Body & Cardio. No shoulder isolation; two glute days retained.
+Original profile storage keys and both color themes remain unchanged; past workout logs are preserved and can still be exported/imported separately.

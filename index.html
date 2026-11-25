@@ -229,7 +229,7 @@
 </head>
 <body>
   <div class="wrap">
-    <header class="brand"><div class="brand-mark"><div class="mark">I</div><span>IRONLOG<span style="color:var(--accent)">.</span></span></div><span class="tiny-tag">5 DAY PLAN · v2.7</span></header>
+    <header class="brand"><div class="brand-mark"><div class="mark">I</div><span>IRONLOG<span style="color:var(--accent)">.</span></span></div><span class="tiny-tag">4 DAY PLAN · v2.8</span></header>
     <div id="profileSwitch" class="profile-switch" role="group" aria-label="Select workout profile">
       <button type="button" data-action="profile" data-value="me" class="profile-choice" aria-pressed="true">👤 Modestas</button>
       <button type="button" data-action="profile" data-value="girlfriend" class="profile-choice" aria-pressed="false">♡ Goda</button>
@@ -254,87 +254,76 @@ function storageKey(){return profile==='girlfriend'?GF_STORAGE_KEY:STORAGE_KEY;}
 const dayNames = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 const shortDays = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const MY_R = [
- {name:'Lower Body A', focus:'Squat strength', duration:'55–65 min', exercises:[
-  e('squat','Barbell Back Squat',3,5,5,180,'kg',2.5,'Controlled depth; use safety bars.'),
-  e('hip1','Hip Thrust Machine',3,8,8,120,'kg',5,'Keep ribs down; full glute contraction.'),
+ {name:"Legs",focus:"Balanced lower-body strength with reduced volume",duration:"40–50 min",exercises:[
+  e('squat','Barbell Back Squat',2,5,5,180,'kg',2.5,'Controlled depth; use safety bars.'),
+  e('hip1','Hip Thrust Machine',2,8,10,120,'kg',5,'Keep ribs down; full glute contraction.'),
   e('legpress','Leg Press',2,10,10,120,'kg',5,'Keep your lower back supported.'),
-  e('curl1','Seated Leg Curl',2,10,10,90,'kg',2.5,'Move slowly and control the return.'),
-  e('calf1','Standing Calf Raise',2,12,12,60,'kg',2.5,'Full comfortable range of motion.')
+  e('curl1','Seated Leg Curl',2,10,12,90,'kg',2.5,'Move slowly and control the return.'),
+  e('calf1','Standing Calf Raise',2,12,15,60,'kg',2.5,'Full comfortable range of motion.')
  ]},
- {name:'Upper Body A', focus:'Bench strength', duration:'55–65 min', exercises:[
+ {name:'Rest & Recover',focus:'Full rest',duration:'—',exercises:[]},
+ {name:"Upper Body A",focus:"Bench strength, chest and back",duration:"50–60 min",exercises:[
   e('bench','Barbell Bench Press',3,5,5,180,'kg',2.5,'Use a spotter or safety arms.'),
   e('cableRow','Seated Cable Row',3,8,8,120,'kg',2.5,'Pull elbows back, without swinging.'),
   e('dbShoulder','Dumbbell Shoulder Press',2,8,8,120,'kg',1,'Log weight per dumbbell.'),
-  e('latPulldown','Lat Pulldown',3,10,10,90,'kg',2.5,'Avoid leaning back excessively.'),
+  e('latPulldown','Lat Pulldown',2,10,10,90,'kg',2.5,'Avoid leaning back excessively.'),
   e('triPush','Triceps Pushdown',2,12,12,60,'kg',2.5,'Keep elbows close to your sides.')
  ]},
- {name:'Forearms, Wrists + Abs', focus:'Light accessory work for grip, wrists and core', duration:'40–50 min', exercises:[
-  e('facePull','Cable Face Pull',2,15,15,60,'kg',2.5,'Keep the rope level with your face; no swinging.'),
-  e('curlWed','Dumbbell Biceps Curl',2,12,12,60,'kg',1,'Log weight per dumbbell.'),
+ {name:"Biceps, Forearms & Abs",focus:"Light biceps, wrist and core accessories",duration:"35–45 min",exercises:[
+  e('curlWed','Dumbbell Biceps Curl',2,10,12,60,'kg',1,'Log weight per dumbbell.'),
   e('hammer','Dumbbell Hammer Curl',2,10,12,60,'kg',1,'Light, controlled reps; neutral grip for brachioradialis and forearms.'),
   e('wrist','Reverse Wrist Curl',2,12,15,60,'kg',1,'Light weight; palms down; control each rep.'),
   e('wristFlex','Seated Dumbbell Wrist Curl',2,12,15,60,'kg',0.5,'Light weight; palms up; move only at the wrists.'),
-  e('reverseCrunch','Reverse Crunch',2,10,15,60,'reps',0,'Slowly tilt your pelvis; avoid swinging your legs.'),
-  e('plank','Plank',3,30,45,60,'sec',0,'Keep your body straight; breathe normally.'),
-  e('mobility','Mobility Exercises',1,5,10,0,'min',0,'Gentle hip and shoulder mobility.')
- ]},
- {name:'Lower Body B', focus:'Leg strength', duration:'50–60 min', exercises:[
-  e('hack','Hack Squat Machine',3,6,8,180,'kg',5,'Adjust foot position to a comfortable range.'),
-  e('split','Bulgarian Split Squat',2,8,8,120,'kg',1,'8 reps per leg; log weight per dumbbell.'),
-  e('curl2','Seated Leg Curl',3,10,10,90,'kg',2.5,'Steady tempo, no bouncing.'),
-  e('hip2','Hip Thrust Machine',2,10,10,120,'kg',5,'Smooth controlled reps.'),
-  e('calf2','Seated Calf Raise',2,12,12,60,'kg',2.5,'Pause briefly at the top.')
+  e('reverseCrunch','Reverse Crunch',2,12,15,60,'reps',0,'Slowly tilt your pelvis; avoid swinging your legs.'),
+  e('plank','Plank',2,30,45,60,'sec',0,'Keep your body straight; breathe normally.')
  ]},
  {name:'Rest & Recover',focus:'Full rest',duration:'—',exercises:[]},
  {name:'Rest & Recover',focus:'Full rest',duration:'—',exercises:[]},
- {name:'Upper Body B', focus:'Shoulders, back and traps', duration:'60–70 min', exercises:[
+ {name:"Upper Body B",focus:"Shoulders, chest, back and traps",duration:"55–65 min",exercises:[
   e('ohp','Barbell Overhead Press',3,5,5,180,'kg',2.5,'Squeeze glutes and avoid leaning back.'),
   e('incline','Incline Dumbbell Bench Press',3,8,8,120,'kg',1,'Log weight per dumbbell.'),
   e('pullups','Assisted Pull-ups',3,6,8,120,'kg',0,'Assistance machine: kg is assistance, lower is harder.'),
   e('chestRow','Chest-Supported Row',3,8,8,120,'kg',2.5,'Keep chest in contact with pad.'),
   e('laterals','Dumbbell Lateral Raise',2,12,12,60,'kg',1,'Control arms; avoid swinging.'),
-  e('curlFri','Dumbbell Biceps Curl',2,10,10,60,'kg',1,'Log weight per dumbbell.'),
   e('shrugs','Dumbbell Shrugs',2,10,15,90,'kg',1,'NEW · Lift shoulders upward, not in circles.')
  ]},
 ];
 const GF_R=[
-{name:'Glutes & Legs A',focus:'Glute development and lower-body strength',duration:'45–55 min',exercises:[
- e('gfHipMon','Hip Thrust Machine',3,10,12,120,'kg',2.5,'Drive through your feet; squeeze glutes without arching your back.'),
- e('gfPress','Leg Press',3,10,12,120,'kg',5,'Keep your whole back in contact with the pad.'),
- e('gfCurlMon','Seated Leg Curl',2,12,12,75,'kg',2.5,'Controlled reps without swinging.'),
- e('gfAbductMon','Hip Abduction Machine',2,15,15,60,'kg',2.5,'Open the knees gradually; do not swing.'),
- e('gfCalf','Standing Calf Raises',2,15,15,60,'kg',2.5,'Rise and lower slowly.')
-]},
-{name:'Chest & Back',focus:'Balanced upper body · no direct shoulder isolation',duration:'35–45 min',exercises:[
- e('gfChestTue','Chest Press Machine',2,10,12,90,'kg',2.5,'Keep the chest lifted and shoulders comfortable.'),
- e('gfLatTue','Lat Pulldown',2,10,12,90,'kg',2.5,'Pull toward the upper chest without rocking.'),
- e('gfRowTue','Seated Cable Row',2,12,12,90,'kg',2.5,'Pull with elbows, keeping a neutral spine.'),
- e('gfPec','Pec Deck Chest Fly',2,12,12,75,'kg',2.5,'Keep elbows comfortably bent; avoid extreme stretch.')
-]},
-{name:'Abs, Core & Cardio',focus:'Cardiovascular fitness and core stability',duration:'35–45 min',exercises:[
- e('gfWalk','Incline Treadmill Walk',1,20,25,0,'min',0,'Keep a comfortable pace and upright posture.'),
- e('gfCableCrunch','Cable Crunch',2,12,15,60,'kg',2.5,'Bring ribs down toward pelvis without pulling with arms.'),
- e('gfReverse','Reverse Crunch',2,12,12,60,'reps',0,'Tilt the pelvis upward rather than swinging your legs.'),
- e('gfDeadbug','Dead Bug',2,10,10,60,'reps',0,'10 reps per side; keep back supported.'),
- e('gfPlank','Plank',2,30,30,60,'sec',0,'Breathe steadily during the hold.')
-]},
-{name:'Glutes & Legs B',focus:'Legs and glutes',duration:'45–55 min',exercises:[
- e('gfHack','Hack Squat Machine',3,10,10,120,'kg',5,'Adjust foot position for comfortable squat depth.'),
- e('gfSplit','Bulgarian Split Squat',2,8,8,90,'kg',1,'8 reps per leg; start bodyweight-only if needed.'),
- e('gfHipThu','Hip Thrust Machine',2,10,10,120,'kg',2.5,'Move steadily and avoid arching your back.'),
- e('gfCurlThu','Seated Leg Curl',2,12,12,75,'kg',2.5,'Smooth reps without momentum.'),
- e('gfAbductThu','Hip Abduction Machine',2,15,15,60,'kg',2.5,'Slow return; avoid jerking.')
-]},
-{name:'Rest & Recover',focus:'Full rest',duration:'—',exercises:[]},
-{name:'Rest & Recover',focus:'Full rest',duration:'—',exercises:[]},
-{name:'Upper Body & Cardio',focus:'Chest, back, arms and fitness',duration:'45–55 min',exercises:[
- e('gfLatSun','Lat Pulldown',2,12,12,90,'kg',2.5,'Pull with control and avoid rocking.'),
- e('gfChestSun','Chest Press Machine',2,12,12,90,'kg',2.5,'Steady press without pushing into pain.'),
- e('gfRowSun','Seated Cable Row',2,12,12,90,'kg',2.5,'Keep chest up and move smoothly.'),
- e('gfTri','Triceps Rope Pushdown',2,12,12,60,'kg',2.5,'Keep elbows close to the torso.'),
- e('gfBicep','Dumbbell Biceps Curl',2,12,12,60,'kg',1,'Log one dumbbell’s weight.'),
- e('gfCycle','Treadmill or Cycling',1,15,20,0,'min',0,'Choose a comfortable pace at a moderate effort.')
-]}];
+ {name:"Glutes & Legs A",focus:"Glute development and lower-body strength",duration:"45–55 min",exercises:[
+  e('gfHipMon','Hip Thrust Machine',3,10,12,120,'kg',2.5,'Drive through your feet; squeeze glutes without arching your back.'),
+  e('gfPress','Leg Press',3,10,12,120,'kg',5,'Keep your whole back in contact with the pad.'),
+  e('gfCurlMon','Seated Leg Curl',2,12,12,75,'kg',2.5,'Controlled reps without swinging.'),
+  e('gfAbductMon','Hip Abduction Machine',2,15,15,60,'kg',2.5,'Open the knees gradually; do not swing.'),
+  e('gfCalf','Standing Calf Raises',2,15,15,60,'kg',2.5,'Rise and lower slowly.')
+ ]},
+ {name:'Rest & Recover',focus:'Full rest',duration:'—',exercises:[]},
+ {name:"Chest, Back & Cardio",focus:"Upper-body strength, light core and cardio",duration:"45–55 min",exercises:[
+  e('gfChestTue','Chest Press Machine',2,10,12,90,'kg',2.5,'Keep the chest lifted and shoulders comfortable.'),
+  e('gfLatTue','Lat Pulldown',2,10,12,90,'kg',2.5,'Pull toward the upper chest without rocking.'),
+  e('gfRowTue','Seated Cable Row',2,12,12,90,'kg',2.5,'Pull with elbows, keeping a neutral spine.'),
+  e('gfPec','Pec Deck Chest Fly',2,12,12,75,'kg',2.5,'Keep elbows comfortably bent; avoid extreme stretch.'),
+  e('gfDeadbug','Dead Bug',2,10,10,60,'reps',0,'10 reps per side; keep back supported.'),
+  e('gfWalk','Incline Treadmill Walk',1,15,20,0,'min',0,'Keep a comfortable pace and upright posture.')
+ ]},
+ {name:"Glutes & Legs B + Core",focus:"Second glute and leg day with short core work",duration:"50–60 min",exercises:[
+  e('gfHack','Hack Squat Machine',3,10,10,120,'kg',5,'Adjust foot position for comfortable squat depth.'),
+  e('gfSplit','Bulgarian Split Squat',2,8,8,90,'kg',1,'8 reps per leg; start bodyweight-only if needed.'),
+  e('gfHipThu','Hip Thrust Machine',2,10,10,120,'kg',2.5,'Move steadily and avoid arching your back.'),
+  e('gfCurlThu','Seated Leg Curl',2,12,12,75,'kg',2.5,'Smooth reps without momentum.'),
+  e('gfAbductThu','Hip Abduction Machine',2,15,15,60,'kg',2.5,'Slow return; avoid jerking.'),
+  e('gfCableCrunch','Cable Crunch',2,12,15,60,'kg',2.5,'Bring ribs down toward pelvis without pulling with arms.')
+ ]},
+ {name:'Rest & Recover',focus:'Full rest',duration:'—',exercises:[]},
+ {name:'Rest & Recover',focus:'Full rest',duration:'—',exercises:[]},
+ {name:"Upper Body & Cardio",focus:"Chest, back, arms and fitness",duration:"45–55 min",exercises:[
+  e('gfLatSun','Lat Pulldown',2,12,12,90,'kg',2.5,'Pull with control and avoid rocking.'),
+  e('gfChestSun','Chest Press Machine',2,12,12,90,'kg',2.5,'Steady press without pushing into pain.'),
+  e('gfRowSun','Seated Cable Row',2,12,12,90,'kg',2.5,'Keep chest up and move smoothly.'),
+  e('gfTri','Triceps Rope Pushdown',2,12,12,60,'kg',2.5,'Keep elbows close to the torso.'),
+  e('gfBicep','Dumbbell Biceps Curl',2,12,12,60,'kg',1,'Log one dumbbell’s weight.'),
+  e('gfCycle','Treadmill or Cycling',1,15,20,0,'min',0,'Choose a comfortable pace at a moderate effort.')
+ ]},
+];
 let R=profile==='girlfriend'?GF_R:MY_R;
 function e(id,name,sets,min,max,rest,unit,step,note) {return {id,name,sets,min,max,rest,unit,step,note};}
 const FORM_GUIDES = {
@@ -440,7 +429,7 @@ function renderProfileSwitch(){
   b.setAttribute('aria-pressed',String(active));
  });
  const status=document.getElementById('profileInfo');
- if(status)status.textContent=profile==='girlfriend'?'Goda · Glutes, fitness & body recomposition · Private to this device':'Modestas · Strength training · Private to this device';
+ if(status)status.textContent=profile==='girlfriend'?'Goda · 4-day glute and fitness plan · Private to this device':'Modestas · 4-day strength plan · Private to this device';
  document.body.classList.toggle('goda-theme',profile==='girlfriend');
  const themeMeta=document.querySelector('meta[name="theme-color"]');
  if(themeMeta)themeMeta.setAttribute('content',profile==='girlfriend'?'#1a1020':'#10151e');
@@ -488,7 +477,7 @@ function todayView(){
  html+=`<div class="section-row"><h2>Workout notes</h2><span class="muted small">Optional</span></div><textarea class="textarea" data-field="notes" data-date="${date}" placeholder="How did the session feel? Technique tips, energy, etc.">${esc(data.notes[date]||'')}</textarea>`;
  return html;
 }
-function planView(){let html=`<span class="eyebrow">Your training blueprint</span><h1 style="margin-top:10px">The full plan.</h1><p class="top-muted">${profile==='girlfriend'?'Two leg/glute days, two upper-body days and one cardio/core day, with no direct shoulder isolation.':'Four strength-focused sessions, one lighter forearm, wrist and core day. No deadlifts or Romanian deadlifts.'}</p>`;
+function planView(){let html=`<span class="eyebrow">Your training blueprint</span><h1 style="margin-top:10px">The full plan.</h1><p class="top-muted">${profile==='girlfriend'?'Two glute/leg days and two upper-body days, with cardio and core included. No direct shoulder isolation.':'One leg day, two upper-body days and one lighter biceps/forearm/core day. No deadlifts or Romanian deadlifts.'}</p>`;
  html+=`<div class="note"><b>Rule:</b> Warm up 5–10 minutes and do lighter ramp-up sets before your first major lift. Start with 2–3 reps in reserve. Increase load only when technique and target reps are solid.</div>`;
  R.forEach((d,i)=>{
   html+=`<div class="day-plan"><div class="day-plan-top"><div><span class="eyebrow">${dayNames[i]}</span><h3 style="margin-top:5px">${esc(d.name)}</h3></div><button class="${d.exercises.length?'secondary-btn':'tiny-btn'}" data-action="open-day" data-value="${i}">${d.exercises.length?'Log session':'Rest day'}</button></div><p class="focus">${esc(d.focus)} · ${esc(d.duration)}</p>${d.exercises.length?`<div class="plan-exercises">${d.exercises.map(ex=>`<div class="plan-entry"><div class="plan-entry-head"><span class="plan-entry-name">${esc(ex.name)}</span><span class="plan-entry-reps">${ex.sets} × ${target(ex)} ${ex.unit==='kg'?'reps':ex.unit}</span></div>${guideHtml(ex,'plan')}</div>`).join('')}</div>`:'<div class="plan-line"><span>Recovery, hydration and sleep</span><span>—</span></div>'}</div>`;
@@ -508,14 +497,24 @@ function chartMarkup(id){const pts=[];
  const labels=p.map((v,i)=>(i===0||i===p.length-1||p.length<=4)?`<text x="${v.x}" y="${height-9}" text-anchor="middle" font-size="9" fill="#97aab3">${esc(dateShort(new Date(arr[i].date+'T12:00:00')))}</text>`:'').join('');
  return `<svg class="chart" viewBox="0 0 ${width} ${height}" aria-label="Logged maximum working weights over time, kilograms" role="img">${grid}${line}${dots}${labels}</svg><p class="small muted" style="margin-bottom:0">Heaviest completed working set (kg) per logged session. Up to 10 entries.</p>`;
 }
-function historicalWorkoutName(date,day){if(profile==='girlfriend')return R[day].name;
+function historicalWorkoutName(date,day){
  const ids=Object.keys(data.sessions?.[date]||{});
- if(ids.some(id=>['ohp','incline','shrugs','pullups','chestRow'].includes(id)))return 'Upper Body B';
- if(ids.some(id=>['squat','legpress','hip1'].includes(id)))return 'Lower Body A';
- if(ids.some(id=>['bench','latPulldown','triPush'].includes(id)))return 'Upper Body A';
- if(ids.some(id=>['hack','split','hip2'].includes(id)))return 'Lower Body B';
- if(ids.includes('cardio'))return 'Light Day + Core (previous plan)';
- return R[day].name;
+ const has=(...names)=>names.some(id=>ids.includes(id));
+ if(profile==='girlfriend'){
+  if(has('gfHipMon','gfPress','gfCurlMon','gfAbductMon','gfCalf'))return 'Glutes & Legs A';
+  if(has('gfHack','gfSplit','gfHipThu','gfCurlThu','gfAbductThu'))return 'Glutes & Legs B';
+  if(has('gfLatSun','gfChestSun','gfRowSun','gfTri','gfBicep','gfCycle'))return 'Upper Body & Cardio';
+  if(has('gfChestTue','gfLatTue','gfRowTue','gfPec'))return 'Chest & Back';
+  if(has('gfWalk','gfCableCrunch','gfReverse','gfDeadbug','gfPlank'))return 'Abs, Core & Cardio (previous plan)';
+  return GF_R[day].name;
+ }
+ if(has('ohp','incline','shrugs','pullups','chestRow'))return 'Upper Body B';
+ if(has('squat','legpress','hip1','curl1','calf1'))return 'Legs';
+ if(has('bench','latPulldown','triPush','cableRow','dbShoulder'))return 'Upper Body A';
+ if(has('hack','split','hip2','curl2','calf2'))return 'Lower Body B (previous plan)';
+ if(day===2 && has('facePull','curlWed','hammer','wrist','wristFlex','reverseCrunch','plank','mobility'))return 'Forearms, Wrists & Abs (previous plan)';
+ if(has('curlWed','hammer','wrist','wristFlex','reverseCrunch','plank','mobility','facePull','cardio'))return 'Biceps, Forearms & Abs';
+ return MY_R[day].name;
 }
 function progressView(){const history=sessionEntries(),sets=history.reduce((a,b)=>a+b.count,0),vol=history.reduce((a,b)=>a+b.vol,0); const lifts=profile==='girlfriend'?[['gfHipMon','Hip Thrust'],['gfPress','Leg Press'],['gfHack','Hack Squat'],['gfChestTue','Chest Press'],['gfLatTue','Lat Pulldown'],['gfAbductMon','Hip Abduction']]:[['squat','Back Squat'],['bench','Bench Press'],['ohp','Overhead Press'],['hack','Hack Squat'],['hip1','Hip Thrust Machine'],['shrugs','Dumbbell Shrugs'],['wrist','Reverse Wrist Curls']];
  let html=`<span class="eyebrow">Your hard work, measured</span><h1 style="margin-top:10px">Keep getting stronger.</h1><p class="top-muted">Your data is stored locally in this browser. Every checked-off set counts toward your history.</p><div class="stats"><div class="stat"><strong>${history.length}</strong><span>Sessions logged</span></div><div class="stat"><strong>${sets}</strong><span>Sets finished</span></div><div class="stat"><strong>${vol>=1000?(vol/1000).toFixed(1)+'k':Math.round(vol)}</strong><span>Approx. kg × reps</span></div></div>`;
@@ -551,7 +550,7 @@ function coachView(){
  ]:[
   ['When should I increase my weights?','Increase gradually after finishing all sets at the top of the rep range with controlled technique and about 1–2 good reps left.'],
   ['Why no deadlifts?','You found deadlift technique difficult; squats, hip thrusts, leg curls and rows train your body without requiring that movement.'],
-  ['Are my traps and forearms trained?','Yes. Sunday includes shrugs. Wednesday has reverse wrist curls, seated wrist curls and hammer curls.'],
+  ['Are my traps and forearms trained?','Yes. Sunday includes shrugs. Thursday has reverse wrist curls, seated wrist curls and hammer curls.'],
   ['How much protein?','Your current starting guide is around 115–145 g protein daily, alongside adequate calories and sleep.']
  ];
  return `<span class="eyebrow">Training help · ${her?'Goda':'Modestas'}</span>
@@ -569,7 +568,7 @@ function coachPrompt(question){
  const her=profile==='girlfriend';
  return [
  her?"I am asking about Goda’s gym program. Please give concise, beginner-friendly advice aligned with her goals.":"Please give concise, beginner-friendly advice aligned with my personal strength-training plan.",
- her?'Goda: 18 years old, around 160 cm, 59.8 kg, new to gym, wants a defined-looking waist and glutes/legs and better cardiovascular fitness. Focus on sustainable body recomposition instead of aggressive weight loss. She does not want direct shoulder isolation exercises.':'Modestas: 19 years old, 194 cm, 71 kg, beginner, full gym access; goal strength, 5 training days a week, no deadlifts or Romanian deadlifts because of technique difficulty.',
+ her?'Goda: 18 years old, around 160 cm, 59.8 kg, new to gym, wants a defined-looking waist and glutes/legs and better cardiovascular fitness. Focus on sustainable body recomposition instead of aggressive weight loss. She does not want direct shoulder isolation exercises.':'Modestas: 19 years old, 194 cm, 71 kg, beginner, full gym access; goal strength, 4 training days a week, no deadlifts or Romanian deadlifts because of technique difficulty.',
  'Selected weekly program:',
  ...R.map((day,i)=>day.exercises.length?dayNames[i]+': '+day.exercises.map(ex=>ex.name+' '+ex.sets+'x'+target(ex)+(ex.unit==='kg'?' reps':' '+ex.unit)).join('; '):dayNames[i]+': Rest'),
  her?'Avoid claims that ab exercises can selectively reduce belly fat. Respect the preference for no shoulder isolation.':'Emphasize safe technique and gradual weight progression.',
@@ -583,7 +582,7 @@ function moreView(){
  const goal=her?'Body recomposition, glutes, core and fitness':'Strength';
  const nutrition=her?'<div class="plan-line"><span>Protein guide</span><span>~75–95 g/day</span></div><div class="plan-line"><span>Nutrition focus</span><span>Balanced meals</span></div><div class="plan-line"><span>Activity</span><span>Build fitness gradually</span></div><p>No extreme dieting: progress is about strength, fitness and feeling well, not just the scale.</p>':'<div class="plan-line"><span>Protein</span><span>115–145 g/day</span></div><div class="plan-line"><span>Calorie surplus</span><span>+250–350/day*</span></div><div class="plan-line"><span>Gradual gain</span><span>0.2–0.4 kg/week</span></div><div class="plan-line"><span>Sleep</span><span>8–9 hours</span></div><p>*Adjust your calories to your weight trend and goals.</p>';
  return `<span class="eyebrow">Training setup · ${her?'Goda':'Modestas'}</span><h1 style="margin-top:10px">Your guide.</h1><p class="top-muted">Your settings and backup controls apply to the selected profile only.</p>
- <div class="settings-card"><h3>${her?"Goda’s starting profile":"Modestas’s starting profile"}</h3><div class="stats"><div class="stat"><strong>${age}</strong><span>Years old</span></div><div class="stat"><strong>${height}</strong><span>Height · cm</span></div><div class="stat"><strong>${weight}</strong><span>Starting kg</span></div></div><p>Goal: <b style="color:var(--text)">${goal}</b>. Plan: <b style="color:var(--text)">5 training days</b>, with Friday and Saturday rest.</p></div>
+ <div class="settings-card"><h3>${her?"Goda’s starting profile":"Modestas’s starting profile"}</h3><div class="stats"><div class="stat"><strong>${age}</strong><span>Years old</span></div><div class="stat"><strong>${height}</strong><span>Height · cm</span></div><div class="stat"><strong>${weight}</strong><span>Starting kg</span></div></div><p>Goal: <b style="color:var(--text)">${goal}</b>. Plan: <b style="color:var(--text)">4 training days</b> (Mon, Wed, Thu, Sun), with Tuesday, Friday and Saturday rest.</p></div>
  <div class="settings-card"><h3>Nutrition & recovery</h3>${nutrition}</div>
  <div class="settings-card"><h3>Progression rules</h3><p>${her?'Start with 1–2 working sets per exercise if needed and increase gradually toward the plan. Focus on technique, comfortable cardio and consistency.':'Practice form with around 2–3 reps in reserve. Increase loads gradually after clean sets and target reps.'} Stop painful movements and seek qualified assessment for persistent pain.</p></div>
  <div class="settings-card"><h3>Exercise technique & videos</h3><p>Tap <b>Form tips</b> on an exercise for step-by-step cues, or use <b>Video demos</b> to find exercise tutorials online. Video search results have not been independently vetted.</p></div>
