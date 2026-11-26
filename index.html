@@ -229,7 +229,7 @@
 </head>
 <body>
   <div class="wrap">
-    <header class="brand"><div class="brand-mark"><div class="mark">I</div><span>IRONLOG<span style="color:var(--accent)">.</span></span></div><span class="tiny-tag">4 DAY PLAN · v2.8</span></header>
+    <header class="brand"><div class="brand-mark"><div class="mark">I</div><span>IRONLOG<span style="color:var(--accent)">.</span></span></div><span class="tiny-tag">4 DAY PLAN · v2.9</span></header>
     <div id="profileSwitch" class="profile-switch" role="group" aria-label="Select workout profile">
       <button type="button" data-action="profile" data-value="me" class="profile-choice" aria-pressed="true">👤 Modestas</button>
       <button type="button" data-action="profile" data-value="girlfriend" class="profile-choice" aria-pressed="false">♡ Goda</button>
@@ -325,6 +325,20 @@ const GF_R=[
  ]},
 ];
 let R=profile==='girlfriend'?GF_R:MY_R;
+// Special single-date workout; regular Fridays stay as rest days.
+const BONUS_LEG_DATE='2026-11-27';
+const BONUS_LEG_WORKOUT={
+ name:'Easy Legs (Bonus)',focus:'Light lower-body session for recovery-friendly movement',duration:'25–35 min',
+ exercises:[
+  e('bonusLegExt','Leg Extension',2,12,15,75,'kg',2.5,'Go light, move smoothly, and leave 3–4 good reps in reserve.'),
+  e('bonusLegCurl','Seated Leg Curl',2,12,15,75,'kg',2.5,'Use an easy weight and lower slowly; no failure reps.'),
+  e('bonusCalf','Seated Calf Raise',2,12,15,60,'kg',2.5,'Slow reps without bouncing at the bottom.'),
+  e('bonusBike','Easy Stationary Bike',1,10,15,0,'min',0,'Comfortable conversational pace; skip if you feel worse.')
+ ]
+};
+function workoutFor(day,date){
+ return profile==='me'&&day===4&&date===BONUS_LEG_DATE?BONUS_LEG_WORKOUT:R[day];
+}
 function e(id,name,sets,min,max,rest,unit,step,note) {return {id,name,sets,min,max,rest,unit,step,note};}
 const FORM_GUIDES = {
  squat:{muscles:'Quads · glutes · core',steps:['Place the bar across your upper back, brace your abdomen, and step back from the rack.','Set feet about shoulder-width apart, then bend hips and knees together to lower under control.','Push through your whole foot to stand up, keeping the bar balanced over mid-foot.'],avoid:'Keep your heels down and back stable. Set safety bars before attempting working sets.'},
@@ -347,6 +361,7 @@ const FORM_GUIDES = {
  gfCableCrunch:{muscles:'Abdominals',steps:['Kneel at a high cable pulley and hold the rope near your temples.','Bring your ribs toward your pelvis, gently curling your torso downward.','Return to the starting position with control.'],avoid:'Avoid yanking with your arms or using momentum from your hips.'},
  gfDeadbug:{muscles:'Deep core · abs',steps:['Lie face-up with arms toward the ceiling and hips and knees bent.','Slowly extend one arm and the opposite leg toward the floor.','Return, switch sides and keep the lower back controlled.'],avoid:'Stop extending before your lower back arches excessively.'},
  gfWalk:{muscles:'Heart · legs · cardiovascular fitness',steps:['Start on a flat treadmill at a comfortable walking pace.','Increase the incline modestly as long as you can stand upright.','Maintain an effort that still allows conversation for 20–25 minutes.'],avoid:'Do not use an incline so steep that you need to lean heavily on handrails.'},
+ bonusLegExt:{muscles:'Quadriceps · front thighs',steps:['Adjust the machine to align your knees with the pivot.','Straighten the knees slowly through a comfortable range.','Lower the weight gently and stop well before muscle failure.'],avoid:'Avoid swinging, forcefully locking out, or training through knee pain.'},
  facePull:{muscles:'Rear shoulders · upper back · traps',steps:['Set the rope at face or forehead height and stand with a stable stance.','Pull the rope toward your face as your elbows move outward.','Squeeze your upper back lightly and return with control.'],avoid:'Keep your ribs down and avoid leaning back to move more weight.'},
  curlWed:{muscles:'Biceps · forearms',steps:['Stand tall with dumbbells by your sides and palms facing forward.','Bend your elbows to raise the weights while your upper arms stay close to your sides.','Lower slowly until your elbows straighten comfortably.'],avoid:'Avoid leaning back or swinging your elbows forward.'},
  wrist:{muscles:'Forearm extensors',steps:['Sit and rest your forearms on your thighs or a bench with palms facing down.','Let your wrists move slightly downward, then lift the backs of your hands toward your forearms.','Use very light weights and lower slowly.'],avoid:'Only move at the wrist. Stop if you feel sharp wrist pain.'},
@@ -362,7 +377,7 @@ const FORM_GUIDES = {
  laterals:{muscles:'Side deltoids',steps:['Stand tall holding light dumbbells at your sides.','With slight elbow bend, raise arms out to the sides to about shoulder height.','Lower slowly without swinging.'],avoid:'Avoid hiking your shoulders or lifting with momentum.'},
  shrugs:{muscles:'Upper traps · grip',steps:['Stand upright with dumbbells at your sides and arms straight.','Raise your shoulders straight upward toward your ears.','Pause briefly at the top and lower slowly.'],avoid:'Do not roll your shoulders in circles or jerk heavy weights.'}
 };
-const GUIDE_ALIASES = {hip2:'hip1',curl2:'curl1',curlFri:'curlWed',gfHipMon:'hip1',gfHipThu:'hip1',gfPress:'legpress',gfCurlMon:'curl1',gfCurlThu:'curl1',gfAbductThu:'gfAbductMon',gfLatTue:'latPulldown',gfLatSun:'latPulldown',gfRowTue:'cableRow',gfRowSun:'cableRow',gfChestSun:'gfChestTue',gfCalf:'calf1',gfReverse:'reverseCrunch',gfPlank:'plank',gfHack:'hack',gfSplit:'split',gfTri:'triPush',gfBicep:'curlWed',gfCycle:'gfWalk'};
+const GUIDE_ALIASES = {bonusLegCurl:'curl1',bonusCalf:'calf2',bonusBike:'cardio',hip2:'hip1',curl2:'curl1',curlFri:'curlWed',gfHipMon:'hip1',gfHipThu:'hip1',gfPress:'legpress',gfCurlMon:'curl1',gfCurlThu:'curl1',gfAbductThu:'gfAbductMon',gfLatTue:'latPulldown',gfLatSun:'latPulldown',gfRowTue:'cableRow',gfRowSun:'cableRow',gfChestSun:'gfChestTue',gfCalf:'calf1',gfReverse:'reverseCrunch',gfPlank:'plank',gfHack:'hack',gfSplit:'split',gfTri:'triPush',gfBicep:'curlWed',gfCycle:'gfWalk'};
 function guideFor(ex) {return FORM_GUIDES[GUIDE_ALIASES[ex.id]||ex.id] || {muscles:'Full body',steps:[ex.note],avoid:'Use a comfortable range of motion and controlled technique.'};}
 function videoLink(ex) {
  const phrase = ex.id==='mobility' ? 'beginner hips shoulders mobility gym routine' : ex.name + ' how to exercise proper form tutorial';
@@ -407,7 +422,7 @@ function updateSet(date,id,i,patch){
  data.sessions[date][id][i]={...getSet(date,id,i),...patch};
  save();
 }
-function sessionSummary(date,day) {let total=0,completed=0;R[day].exercises.forEach(ex=>{total+=ex.sets;for(let i=0;i<ex.sets;i++)if(getSet(date,ex.id,i).done)completed++;});return {total,completed,pct:total?Math.round(completed/total*100):0};}
+function sessionSummary(date,day) {let total=0,completed=0;workoutFor(day,date).exercises.forEach(ex=>{total+=ex.sets;for(let i=0;i<ex.sets;i++)if(getSet(date,ex.id,i).done)completed++;});return {total,completed,pct:total?Math.round(completed/total*100):0};}
 function sessionEntries(){return Object.keys(data.sessions).filter(date=>/^\d{4}-\d{2}-\d{2}$/.test(date)).map(date=>{let count=0,vol=0;for(const arr of Object.values(data.sessions[date]||{})){if(!Array.isArray(arr))continue;for(const x of arr){if(x?.done){count++;const w=Number(x.weight),r=Number(x.reps); if(x.weight!=='' && x.weight!=null && w>0 && r>0)vol+=w*r;}}}return {date,count,vol};}).filter(x=>x.count>0).sort((a,b)=>a.date<b.date?1:-1);}
 function lastPerformance(id,beforeDate){const dates=Object.keys(data.sessions).filter(d=>d<beforeDate).sort().reverse();for(const date of dates){const a=data.sessions[date]?.[id];if(Array.isArray(a)){const completed=a.filter(s=>s?.done&&s.weight!==''&&s.weight!=null&&Number(s.weight)>0);if(completed.length)return {date,arr:a,weight:Math.max(...completed.map(s=>Number(s.weight)))};}}return null;}
 function suggestion(ex,date){if(ex.unit!=='kg'||ex.step<=0)return '';const prev=lastPerformance(ex.id,date);if(!prev)return '';const all=Array.isArray(prev.arr)&&prev.arr.slice(0,ex.sets).length===ex.sets&&prev.arr.slice(0,ex.sets).every(s=>s?.done&&Number(s.reps)>=ex.max); if(ex.id==='pullups')return '';if(all)return 'Try '+fmt(prev.weight+ex.step)+' kg next';return 'Last: '+fmt(prev.weight)+' kg';}
@@ -456,12 +471,13 @@ function weekAndDays(){
  <div class="days" aria-label="Days of this week">${dayNames.map((d,i)=>{const date=iso(dateForDay(i));const c=sessionSummary(date,i).completed;return `<button class="day-btn ${selectedDay===i?'active':''}" data-action="day" data-value="${i}" aria-label="${d}"><span>${shortDays[i]}</span><b>${dateForDay(i).getDate()}</b><i class="dot ${c?'completed':''}"></i></button>`;}).join('')}</div>`;
 }
 function todayView(){
- const d=R[selectedDay],date=dateSession(),s=sessionSummary(date,selectedDay),rest=d.exercises.length===0;
+ const date=dateSession(),d=workoutFor(selectedDay,date),s=sessionSummary(date,selectedDay),rest=d.exercises.length===0;
  const fullDate=dateLong(dateForDay(selectedDay));
- const heading=rest?'Recharge day.':d.name+' day.';
+ const heading=rest?'Recharge day.':d.name+(date===BONUS_LEG_DATE&&profile==='me'?'':' day.');
  const desc=rest?'Rest, eat well and get ready for your next workout.':d.focus+' · '+d.duration+' · '+d.exercises.length+' exercises';
  let html=`<div class="hero"><span class="eyebrow">${esc(dayNames[selectedDay])} · ${esc(fullDate)}</span><h1 style="margin-top:12px">${esc(heading)}</h1><p>${esc(desc)}</p><div class="hero-footer"><div class="hero-stat"><strong>${rest?'REST':s.completed+' / '+s.total}</strong><span>${rest?'Recovery is training too':'Sets finished'}</span></div><div class="ring" style="--progress:${rest?0:s.pct}%"><strong>${rest?'☾':s.pct+'%'}</strong></div></div></div>`;
  html+=weekAndDays();
+ if(profile==='me'&&date===BONUS_LEG_DATE)html+=`<div class="note"><b>One-time Friday workout (27 Nov):</b> Keep this session easy, leave 3–4 reps in reserve, and skip it if your legs are still significantly sore. Other Fridays remain rest days.</div>`;
  if(rest){html+=`<div class="section-row"><h2>Rest day</h2><span class="pill green">Recover</span></div><div class="empty"><div class="empty-emoji">🌙</div><h3>Recovery builds strength.</h3><p>You have no exercises scheduled today. Prioritize food, hydration and sleep. Select another day above to see your workouts.</p><button class="primary-btn" data-action="day" data-value="0">View Monday workout</button></div>`;return html;}
  html+=`<div class="workout-meta"><div><h2>Today's exercises</h2><p class="muted">${s.completed} of ${s.total} sets completed · Auto-saved</p></div><span class="pill">${esc(d.duration)}</span></div><div class="progress-track" role="progressbar" aria-valuenow="${s.pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Workout progress"><div style="width:${s.pct}%"></div></div><p class="video-notice">Tap <b>Form tips</b> for 3 quick steps, or <b>Video demos</b> to find exercise tutorials on YouTube (internet required).</p>`;
  d.exercises.forEach((ex,n)=>{
@@ -479,7 +495,9 @@ function todayView(){
 }
 function planView(){let html=`<span class="eyebrow">Your training blueprint</span><h1 style="margin-top:10px">The full plan.</h1><p class="top-muted">${profile==='girlfriend'?'Two glute/leg days and two upper-body days, with cardio and core included. No direct shoulder isolation.':'One leg day, two upper-body days and one lighter biceps/forearm/core day. No deadlifts or Romanian deadlifts.'}</p>`;
  html+=`<div class="note"><b>Rule:</b> Warm up 5–10 minutes and do lighter ramp-up sets before your first major lift. Start with 2–3 reps in reserve. Increase load only when technique and target reps are solid.</div>`;
- R.forEach((d,i)=>{
+ if(profile==='me'&&iso(dateForDay(4))===BONUS_LEG_DATE)html+=`<div class="note"><b>Bonus session only Friday 27 Nov:</b> A short, easy leg workout replaces this Friday's rest day. Following Fridays still show rest.</div>`;
+ R.forEach((regular,i)=>{
+  const date=iso(dateForDay(i)),d=workoutFor(i,date);
   html+=`<div class="day-plan"><div class="day-plan-top"><div><span class="eyebrow">${dayNames[i]}</span><h3 style="margin-top:5px">${esc(d.name)}</h3></div><button class="${d.exercises.length?'secondary-btn':'tiny-btn'}" data-action="open-day" data-value="${i}">${d.exercises.length?'Log session':'Rest day'}</button></div><p class="focus">${esc(d.focus)} · ${esc(d.duration)}</p>${d.exercises.length?`<div class="plan-exercises">${d.exercises.map(ex=>`<div class="plan-entry"><div class="plan-entry-head"><span class="plan-entry-name">${esc(ex.name)}</span><span class="plan-entry-reps">${ex.sets} × ${target(ex)} ${ex.unit==='kg'?'reps':ex.unit}</span></div>${guideHtml(ex,'plan')}</div>`).join('')}</div>`:'<div class="plan-line"><span>Recovery, hydration and sleep</span><span>—</span></div>'}</div>`;
  });
  return html;
@@ -508,6 +526,7 @@ function historicalWorkoutName(date,day){
   if(has('gfWalk','gfCableCrunch','gfReverse','gfDeadbug','gfPlank'))return 'Abs, Core & Cardio (previous plan)';
   return GF_R[day].name;
  }
+ if(has('bonusLegExt','bonusLegCurl','bonusCalf','bonusBike'))return 'Easy Legs (Bonus)';
  if(has('ohp','incline','shrugs','pullups','chestRow'))return 'Upper Body B';
  if(has('squat','legpress','hip1','curl1','calf1'))return 'Legs';
  if(has('bench','latPulldown','triPush','cableRow','dbShoulder'))return 'Upper Body A';
@@ -570,7 +589,7 @@ function coachPrompt(question){
  her?"I am asking about Goda’s gym program. Please give concise, beginner-friendly advice aligned with her goals.":"Please give concise, beginner-friendly advice aligned with my personal strength-training plan.",
  her?'Goda: 18 years old, around 160 cm, 59.8 kg, new to gym, wants a defined-looking waist and glutes/legs and better cardiovascular fitness. Focus on sustainable body recomposition instead of aggressive weight loss. She does not want direct shoulder isolation exercises.':'Modestas: 19 years old, 194 cm, 71 kg, beginner, full gym access; goal strength, 4 training days a week, no deadlifts or Romanian deadlifts because of technique difficulty.',
  'Selected weekly program:',
- ...R.map((day,i)=>day.exercises.length?dayNames[i]+': '+day.exercises.map(ex=>ex.name+' '+ex.sets+'x'+target(ex)+(ex.unit==='kg'?' reps':' '+ex.unit)).join('; '):dayNames[i]+': Rest'),
+ ...R.map((regular,i)=>{const day=workoutFor(i,iso(dateForDay(i)));return day.exercises.length?dayNames[i]+': '+day.exercises.map(ex=>ex.name+' '+ex.sets+'x'+target(ex)+(ex.unit==='kg'?' reps':' '+ex.unit)).join('; '):dayNames[i]+': Rest';}),
  her?'Avoid claims that ab exercises can selectively reduce belly fat. Respect the preference for no shoulder isolation.':'Emphasize safe technique and gradual weight progression.',
  'You do not have access to private IronLog workout logs or measurements beyond the profile above.',
  'Question: '+question
@@ -624,10 +643,10 @@ document.body.addEventListener('click',event=>{
  if(a==='week'){weekOffset+=Number(v);render();return;}
  if(a==='open-day'){selectedDay=Number(v);weekOffset=0;view='today';render();scrollTop();return;}
  if(a==='guide'){const target=document.getElementById(btn.dataset.target);if(!target)return;const expand=target.hidden;target.hidden=!expand;btn.setAttribute('aria-expanded',String(expand));btn.innerHTML=expand?'ℹ Hide tips <span aria-hidden="true">⌃</span>':'ℹ Form tips <span aria-hidden="true">⌄</span>';return;}
- if(a==='rest'){const ex=R[Number(btn.dataset.day)].exercises.find(e=>e.id===btn.dataset.id);beginRest(ex);return;}
+ if(a==='rest'){const ex=workoutFor(Number(btn.dataset.day),dateSession()).exercises.find(e=>e.id===btn.dataset.id);beginRest(ex);return;}
  if(a==='complete'){
-  const day=Number(btn.dataset.day),ex=R[day].exercises.find(e=>e.id===btn.dataset.id);if(!ex)return;
-  const date=btn.dataset.date,i=Number(btn.dataset.set),s=getSet(date,ex.id,i);const next=!s.done;
+  const day=Number(btn.dataset.day),date=btn.dataset.date,ex=workoutFor(day,date).exercises.find(e=>e.id===btn.dataset.id);if(!ex)return;
+  const i=Number(btn.dataset.set),s=getSet(date,ex.id,i);const next=!s.done;
   const patch={done:next};if(next&&(s.reps==null||s.reps===''))patch.reps=ex.min;
   updateSet(date,ex.id,i,patch);if(next&&ex.rest)beginRest(ex);
   render();return;

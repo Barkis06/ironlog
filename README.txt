@@ -73,3 +73,7 @@ Both Modestas and Goda train Monday, Wednesday, Thursday and Sunday. Tuesday, Fr
 Modestas: Monday Legs (10 working sets, reduced for recovery); Wednesday Upper Body A (no hammer curls); Thursday Biceps, Forearms & Abs; Sunday Upper Body B (no extra direct biceps/forearm lifts). His strength goal remains unchanged.
 Goda: Monday Glutes & Legs A; Wednesday Chest & Back with Dead Bug and a short incline walk; Thursday Glutes & Legs B plus cable crunches; Sunday Upper Body & Cardio. No shoulder isolation; two glute days retained.
 Original profile storage keys and both color themes remain unchanged; past workout logs are preserved and can still be exported/imported separately.
+
+
+ONE-OFF EASY LEGS (v2.9)
+Only Friday, November 27, 2026 has a bonus leg workout for Modestas. His weekly Friday rest day remains unchanged on all other dates. This bonus workout is Leg Extension 2x12–15, Seated Leg Curl 2x12–15, Seated Calf Raise 2x12–15, followed by Easy Stationary Bike 10–15 minutes. Light effort with 3–4 reps left in reserve, skip if significantly sore. It is date-bound and individually loggable; past sessions and backups are preserved. Goda's routine and pink theme are untouched.
