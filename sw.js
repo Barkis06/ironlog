@@ -1,4 +1,4 @@
-const CACHE='ironlog-offline-v2-9-oneoff-easy-legs';
+const CACHE='ironlog-offline-v3-0-single-cable-fly';
 const ASSETS=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));

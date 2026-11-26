@@ -229,7 +229,7 @@
 </head>
 <body>
   <div class="wrap">
-    <header class="brand"><div class="brand-mark"><div class="mark">I</div><span>IRONLOG<span style="color:var(--accent)">.</span></span></div><span class="tiny-tag">4 DAY PLAN · v2.9</span></header>
+    <header class="brand"><div class="brand-mark"><div class="mark">I</div><span>IRONLOG<span style="color:var(--accent)">.</span></span></div><span class="tiny-tag">4 DAY PLAN · v3.0</span></header>
     <div id="profileSwitch" class="profile-switch" role="group" aria-label="Select workout profile">
       <button type="button" data-action="profile" data-value="me" class="profile-choice" aria-pressed="true">👤 Modestas</button>
       <button type="button" data-action="profile" data-value="girlfriend" class="profile-choice" aria-pressed="false">♡ Goda</button>
@@ -262,12 +262,13 @@ const MY_R = [
   e('calf1','Standing Calf Raise',2,12,15,60,'kg',2.5,'Full comfortable range of motion.')
  ]},
  {name:'Rest & Recover',focus:'Full rest',duration:'—',exercises:[]},
- {name:"Upper Body A",focus:"Bench strength, chest and back",duration:"50–60 min",exercises:[
+ {name:"Upper Body A",focus:"Bench strength, chest and back",duration:"55–65 min",exercises:[
   e('bench','Barbell Bench Press',3,5,5,180,'kg',2.5,'Use a spotter or safety arms.'),
   e('cableRow','Seated Cable Row',3,8,8,120,'kg',2.5,'Pull elbows back, without swinging.'),
   e('dbShoulder','Dumbbell Shoulder Press',2,8,8,120,'kg',1,'Log weight per dumbbell.'),
   e('latPulldown','Lat Pulldown',2,10,10,90,'kg',2.5,'Avoid leaning back excessively.'),
-  e('triPush','Triceps Pushdown',2,12,12,60,'kg',2.5,'Keep elbows close to your sides.')
+  e('triPush','Triceps Pushdown',2,12,12,60,'kg',2.5,'Keep elbows close to your sides.'),
+  e('singleCableFly','Single-Arm Cable Fly',2,12,15,75,'kg',1,'12–15 reps per arm; log the cable weight, not twice the weight. Use a light load and keep shoulders comfortable.')
  ]},
  {name:"Biceps, Forearms & Abs",focus:"Light biceps, wrist and core accessories",duration:"35–45 min",exercises:[
   e('curlWed','Dumbbell Biceps Curl',2,10,12,60,'kg',1,'Log weight per dumbbell.'),
@@ -346,6 +347,7 @@ const FORM_GUIDES = {
  legpress:{muscles:'Quads · glutes',steps:['Adjust the seat so your hips and lower back stay against the pad.','Place feet about shoulder-width apart and lower the platform with control.','Press through the whole foot, stopping before knees lock aggressively.'],avoid:'Do not let your lower back curl or hips lift off the seat.'},
  curl1:{muscles:'Hamstrings',steps:['Adjust the seat and ankle pad to fit your legs, aligning your knee with the machine pivot.','Keep your thighs against the seat and curl your heels downward and back.','Pause briefly and return slowly.'],avoid:'Avoid swinging or lifting your hips to move the weight.'},
  calf1:{muscles:'Calves',steps:['Set your forefeet on the platform with heels free to move.','Rise onto the balls of your feet as high as is comfortable.','Lower slowly into a gentle calf stretch.'],avoid:'Do not bounce at the bottom.'},
+ singleCableFly:{muscles:'Chest · pectorals',steps:['Set a cable handle around mid-chest height, choose a light resistance and stand in a staggered stance.','Keep a slight bend in your elbow and bring one arm across the front of your chest while keeping your torso still.','Return slowly to a comfortable stretch and complete 12–15 reps before switching arms.'],avoid:'Do not twist your body to move the weight, straighten and lock the elbow, or force your shoulder into a deep stretch.'},
  bench:{muscles:'Chest · triceps · shoulders',steps:['Set your eyes under the bar, feet planted, and shoulder blades gently pulled back.','Unrack with straight arms and lower the bar under control toward your mid-chest.','Press up and slightly back until your arms are straight.'],avoid:'Use a spotter or safety bars; do not flare elbows straight out or bounce the bar off your chest.'},
  cableRow:{muscles:'Mid-back · lats · biceps',steps:['Sit tall with feet braced and hold the handle with arms extended.','Pull toward your lower ribs while driving your elbows back.','Return slowly without rounding or swinging your torso.'],avoid:'Avoid using momentum to jerk the weight.'},
  dbShoulder:{muscles:'Shoulders · triceps',steps:['Sit upright with your back supported, holding dumbbells around shoulder height.','Press the dumbbells upward in a comfortable path.','Lower slowly to shoulder level.'],avoid:'Do not over-arch your lower back; start with light dumbbells.'},

@@ -77,3 +77,7 @@ Original profile storage keys and both color themes remain unchanged; past worko
 
 ONE-OFF EASY LEGS (v2.9)
 Only Friday, November 27, 2026 has a bonus leg workout for Modestas. His weekly Friday rest day remains unchanged on all other dates. This bonus workout is Leg Extension 2x12–15, Seated Leg Curl 2x12–15, Seated Calf Raise 2x12–15, followed by Easy Stationary Bike 10–15 minutes. Light effort with 3–4 reps left in reserve, skip if significantly sore. It is date-bound and individually loggable; past sessions and backups are preserved. Goda's routine and pink theme are untouched.
+
+
+WEDNESDAY CHEST UPDATE (v3.0)
+Modestas Upper Body A (Wednesday) now includes Single-Arm Cable Fly 2 sets of 12–15 repetitions per arm, after Triceps Pushdown. Keep the weight light, train both arms separately for each set, log the resistance on the cable stack, and stop if shoulder pain occurs. Other Modestas days, the one-off Friday 2026-11-27 legs, Goda's routine, localStorage keys, and both profile color themes are unchanged.
